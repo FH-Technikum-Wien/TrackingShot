@@ -1,0 +1,2 @@
+C:\Users\panag\UniProjects\EZG\TrackingShot\x64\Debug\TrackingShot.exe
+C:\Users\panag\UniProjects\EZG\TrackingShot\x64\Debug\TrackingShot.pdb

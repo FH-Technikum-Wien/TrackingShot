@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 #define STB_IMAGE_IMPLEMENTATION
 
@@ -12,15 +13,11 @@
 #include "Lib/Datatypes/PathPoint.h"
 #include "Lib/Objects/Cube.h"
 #include "Lib/Datatypes/Spline.h"
-#include "Lib/Objects/Cube.h"
 #include "Lib/Objects/Plane.h"
 #include "Lib/Consts.h"
 
 #include <iostream>
-#include <sstream>
-#include <fstream>
 #include <cmath>
-#include <algorithm>
 #include <list>
 #include <vector>
 
@@ -40,6 +37,8 @@ void mousePositionCallback(GLFWwindow *window, double xPos, double yPos);
 void windowFocusCallback(GLFWwindow *window, int isFocused);
 
 void showUI(GLFWwindow *window);
+
+glm::quat squad(glm::quat q0, glm::quat q1, glm::quat q2, glm::quat q3, float t);
 
 enum MovementSpeedLevel {
     SLOW,
@@ -63,7 +62,7 @@ Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
 list<Object *> worldObjects;
 
-vector<PathPoint> path;
+vector<PathPoint> cameraPath;
 vector<PathPoint> customPath;
 int pathIndex = 0;
 float pathSectionProgress = 0.0f;
@@ -158,13 +157,13 @@ int main() {
     worldObjects.push_back(new Cube(&texture1, glm::vec3(2.0f, 1.0f, 4.0f), glm::vec3(70.0f, 120.0f, 45.0f)));
     worldObjects.push_back(new Plane(&texture2, glm::vec3(0, -1, 0), glm::vec3(90, 0, 0)));
 
-    path = defaultPath;
-    Spline spline;
+    cameraPath = defaultPath;
+    Spline spline(0, 0, 0);
 
     while (!glfwWindowShouldClose(window)) {
         showUI(window);
         // Delta progress calculations
-        float currentFrameTime = glfwGetTime();
+        auto currentFrameTime = (float) glfwGetTime();
         deltaTime = currentFrameTime - lastFrameTime;
         lastFrameTime = currentFrameTime;
 
@@ -180,25 +179,27 @@ int main() {
         if (!Consts::PLAY_MODE::FREE_FLY) {
             // Move camera
 
-            float distance = glm::length((path[(pathIndex + 1) % path.size()].Position - path[pathIndex].Position));
+            PathPoint prev = cameraPath[(pathIndex - 1) % cameraPath.size()];
+            PathPoint curr = cameraPath[pathIndex];
+            PathPoint next = cameraPath[(pathIndex + 1) % cameraPath.size()];
+            PathPoint nextNext = cameraPath[(pathIndex + 2) % cameraPath.size()];
+
+            float distance = glm::length(next.Position - curr.Position);
             // Value between 0 and distance
             pathSectionProgress += Consts::PLAYER::MOVEMENT_SPEED * deltaTime;
             float t = (1 / distance) * pathSectionProgress;
             t = min(1.0f, t);
-            camera.Position = spline.Interpolate(path[pathIndex - 1].Position,
-                                                 path[pathIndex].Position,
-                                                 path[(pathIndex + 1) % path.size()].Position,
-                                                 path[(pathIndex + 2) % path.size()].Position, t);
+            camera.Position = spline.Interpolate(prev.Position, curr.Position, next.Position, nextNext.Position, t);
 
             // Rotate camera
-            camera.Orientation = glm::slerp(path[(pathIndex)].Orientation,
-                                            path[(pathIndex + 1) % path.size()].Orientation, t);
+            //camera.Orientation = glm::slerp(curr.Orientation,next.Orientation, t);
+            camera.Orientation = squad(prev.Orientation, curr.Orientation, next.Orientation, nextNext.Orientation, t);
+
+
             if (t == 1.0f) {
                 pathSectionProgress = 0.0f;
-                pathIndex = (pathIndex + 1) % path.size();
+                pathIndex = (pathIndex + 1) % cameraPath.size();
             }
-
-
         }
 
         // Activate program
@@ -290,35 +291,68 @@ void processSingleInput(GLFWwindow *window, int key, int scancode, int action, i
 
     // Path control
 
+    // Adds a path point to the custom path
     if (key == GLFW_KEY_E && action == GLFW_PRESS) {
         customPath.emplace_back(camera.Position, camera.Orientation);
-        lastAction << "Custom path node added";
+        cameraPath = customPath;
+        lastAction << "Point added";
     }
 
+    // Removes the last added path point from the custom path
     if (key == GLFW_KEY_R && action == GLFW_PRESS) {
         if (!customPath.empty()) {
             customPath.pop_back();
-            lastAction << "Custom path node deleted";
+            cameraPath = customPath;
+            lastAction << "Point deleted";
         }
     }
 
+    // Switches to the custom path
     if (key == GLFW_KEY_ENTER && action == GLFW_PRESS) {
-        path = customPath;
+        cameraPath = customPath;
         usingCustomPath = true;
         lastAction << "Switched to custom path";
     }
 
+    // Removes all custom path points and switches to default path
     if (key == GLFW_KEY_DELETE && action == GLFW_PRESS) {
-        path = defaultPath;
+        cameraPath = defaultPath;
         customPath.clear();
         usingCustomPath = false;
         lastAction << "Deleted custom path";
     }
 
+    // Move to first path point
     if (key == GLFW_KEY_F1 && action == GLFW_PRESS) {
         pathIndex = 0;
         pathSectionProgress = 0.0f;
         lastAction << "Path restarted";
+    }
+
+    // Move to next path point
+    if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS) {
+        pathIndex = (pathIndex + 1) % cameraPath.size();
+        camera.Position = cameraPath[pathIndex].Position;
+        camera.Orientation = cameraPath[pathIndex].Orientation;
+        pathSectionProgress = 0.0f;
+        lastAction << "Next path point";
+    }
+
+    // Move to previous path point
+    if (key == GLFW_KEY_LEFT && action == GLFW_PRESS) {
+        pathIndex = (pathIndex - 1) % cameraPath.size();
+        camera.Position = cameraPath[pathIndex].Position;
+        camera.Orientation = cameraPath[pathIndex].Orientation;
+        pathSectionProgress = 0.0f;
+        lastAction << "Prev. path point";
+    }
+
+    // Focus current path point
+    if (key == GLFW_KEY_F && action == GLFW_PRESS) {
+        camera.Position = cameraPath[pathIndex].Position;
+        camera.Orientation = cameraPath[pathIndex].Orientation;
+        pathSectionProgress = 0.0f;
+        lastAction << "Focus current path point";
     }
 }
 
@@ -339,15 +373,15 @@ void showUI(GLFWwindow *window) {
     double delta = currentTime - lastTime;
     numberOfFrames++;
     // Only update every second (or more)
-    if (delta >= 1.5) {
+    if (delta >= 1.0) {
         double fps = double(numberOfFrames) / delta;
         std::stringstream ss;
         ss << "TrackingShot ";
-        ss << " [UsingCustomPath=" << usingCustomPath << "]";
+        ss << " [UsingCustomPath=" << (usingCustomPath ? "true" : "false") << "]";
         ss << " [Custom path nodes: " << customPath.size() << "]";
         ss << " [Current node: " << pathIndex << "]";
-        ss << " [Last Action: " << lastAction.str() << "]";
         ss << " [" << fps << " FPS]";
+        ss << " [Last Action: " << lastAction.str() << "]";
         glfwSetWindowTitle(window, ss.str().c_str());
         numberOfFrames = 0;
         lastTime = currentTime;
@@ -374,8 +408,10 @@ void setMovementSpeed(MovementSpeedLevel level) {
     }
 }
 
-
-
-
-
-
+glm::quat squad(glm::quat q0, glm::quat q1, glm::quat q2, glm::quat q3, float t) {
+    glm::quat conjugate1 = glm::conjugate(q1);
+    glm::quat conjugate2 = glm::conjugate(q2);
+    glm::quat a = q1 * glm::exp(-0.25f * (glm::log(conjugate1 * q2) + glm::log(conjugate1 * q0)));
+    glm::quat b = q2 * glm::exp(-0.25f * (glm::log(conjugate2 * q3) + glm::log(conjugate2 * q1)));
+    return glm::squad(q1, q2, a, b, t);
+}

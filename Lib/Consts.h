@@ -38,7 +38,7 @@ public:
     };
 
     struct PLAY_MODE{
-        inline static bool FREE_FLY = false;
+        inline static bool FREE_FLY = true;
     };
 };
 

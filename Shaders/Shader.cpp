@@ -57,7 +57,7 @@ Shader::Shader(const char *vertexShaderPath, const char *fragmentShaderPath)
         std::cout << "ERROR::SHADER::PROGRAM::LINKING_ERROR\n" << infoLog << std::endl;
     }
 
-    // Delete shaders after linking, not needed anymore
+    // Delete Shaders after linking, not needed anymore
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 }

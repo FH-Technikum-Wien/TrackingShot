@@ -8,12 +8,13 @@
 
 #include "stb-image/stb_image.h"
 #include "Lib/Camera.h"
-#include "Lib/Shader.h"
+#include "Shaders/Shader.h"
 #include "Lib/Datatypes/PathPoint.h"
 #include "Lib/Objects/Cube.h"
 #include "Lib/Datatypes/Spline.h"
 #include "Lib/Objects/Cube.h"
 #include "Lib/Objects/Plane.h"
+#include "Lib/Consts.h"
 
 #include <iostream>
 #include <sstream>
@@ -36,16 +37,6 @@ void windowFocusCallback(GLFWwindow *window, int isFocused);
 
 void showFPS(GLFWwindow *window);
 
-const unsigned int SCREEN_WIDTH = 1600;
-const unsigned int SCREEN_HEIGHT = 1200;
-
-const bool USE_WIREFRAME_MODE = false;
-
-const char *vertexShaderPath = "shaders/shader.vert";
-const char *fragmentShaderPath = "shaders/shader.frag";
-const char *texturePath = "art/textures/woodenCrate.jpg";
-const char *texturePath2 = "art/textures/brickWall.jpg";
-
 float deltaTime = 0.0f;
 float lastFrameTime = 0.0f;
 
@@ -57,8 +48,7 @@ Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
 const float MOVEMENT_SPEED = 2.0f;
 
-int main()
-{
+int main() {
     //----------------------------------------------------------------------------------------------------
     // SETUP
     //----------------------------------------------------------------------------------------------------
@@ -70,21 +60,19 @@ int main()
     // Tell GLFW to use Core_Profile -> Smaller subset without backwards-compatibility (not needed).
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow *window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "", nullptr, nullptr);
-    if (window == nullptr)
-    {
+    GLFWwindow *window = glfwCreateWindow(Consts::SCREEN::WIDTH, Consts::SCREEN::HEIGHT, "", nullptr, nullptr);
+    if (window == nullptr) {
         glfwTerminate();
         throw std::runtime_error("Failed to create the GLFW-Window");
     }
     glfwMakeContextCurrent(window);
 
-    if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
-    {
+    if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
         throw std::runtime_error("Failed to initialize GLAD");
     }
 
     // Set OpenGL viewport.
-    glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    glViewport(0, 0, Consts::SCREEN::WIDTH, Consts::SCREEN::HEIGHT);
     // Register resize method to resize-event.
     glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
     glfwSetCursorPosCallback(window, mousePositionCallback);
@@ -92,27 +80,28 @@ int main()
 
     glEnable(GL_DEPTH_TEST);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    if (USE_WIREFRAME_MODE)
+    glfwSetInputMode(window, GLFW_STICKY_KEYS, GLFW_TRUE);
+    if (Consts::RENDERING::USE_WIREFRAME_MODE)
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     //----------------------------------------------------------------------------------------------------
     // RENDERING
     //----------------------------------------------------------------------------------------------------
 
-    Shader shader(vertexShaderPath, fragmentShaderPath);
+    Shader shader(Consts::PATHS::VERTEX_SHADER, Consts::PATHS::FRAGMENT_SHADER);
 
     stbi_set_flip_vertically_on_load(true);
-    unsigned int texture1 = loadTexture(texturePath, GL_RGB);
-    unsigned int texture2 = loadTexture(texturePath2, GL_RGB);
+    unsigned int texture1 = loadTexture(Consts::PATHS::TEXTURE_1, GL_RGB);
+    unsigned int texture2 = loadTexture(Consts::PATHS::TEXTURE_2, GL_RGB);
 
     shader.activate();
     // Projection Matrix for adding perspective
     glm::mat4 projectionMat;
     projectionMat = glm::perspective(glm::radians(45.0f),
-                                     (float) SCREEN_WIDTH / (float) SCREEN_HEIGHT, 0.1f, 100.0f);
+                                     (float) Consts::SCREEN::WIDTH / (float) Consts::SCREEN::HEIGHT, 0.1f, 100.0f);
     shader.setMat4("projectionMat", projectionMat);
 
     Cube cube(&texture1, glm::vec3(), glm::vec3());
-    Plane plane(&texture2, glm::vec3(0, -1,0), glm::vec3(90,0,0));
+    Plane plane(&texture2, glm::vec3(0, -1, 0), glm::vec3(90, 0, 0));
 
     //----------------------------------------------------------------------------------------------------
     // Path
@@ -133,8 +122,7 @@ int main()
     int index = 0;
     Spline spline;
 
-    while (!glfwWindowShouldClose(window))
-    {
+    while (!glfwWindowShouldClose(window)) {
         showFPS(window);
         // Delta time calculations
         float currentFrameTime = glfwGetTime();
@@ -151,20 +139,21 @@ int main()
 
 
         // Move camera
-        float distance = glm::length((path[(index + 1) % pathCount].Position - path[index].Position));
-        time += deltaTime;
-        float t = (1 / distance) * time;
-        t = min(1.0f, t);
-        camera.Position = spline.Interpolate(path[index - 1].Position, path[index].Position,
-                                             path[(index + 1) % pathCount].Position,
-                                             path[(index + 2) % pathCount].Position, t);
 
-        if (t == 1.0f)
-        {
-            time = 0.0f;
-            index = (index + 1) % pathCount;
+        if (!Consts::PLAY_MODE::FREE_FLY) {
+            float distance = glm::length((path[(index + 1) % pathCount].Position - path[index].Position));
+            time += deltaTime;
+            float t = (1 / distance) * time;
+            t = min(1.0f, t);
+            camera.Position = spline.Interpolate(path[index - 1].Position, path[index].Position,
+                                                 path[(index + 1) % pathCount].Position,
+                                                 path[(index + 2) % pathCount].Position, t);
+
+            if (t == 1.0f) {
+                time = 0.0f;
+                index = (index + 1) % pathCount;
+            }
         }
-
 
         // Activate program
         shader.activate();
@@ -184,8 +173,7 @@ int main()
     return 0;
 }
 
-unsigned int loadTexture(const char *path, unsigned int colorFormat)
-{
+unsigned int loadTexture(const char *path, unsigned int colorFormat) {
     unsigned int texture;
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
@@ -200,12 +188,10 @@ unsigned int loadTexture(const char *path, unsigned int colorFormat)
     int width, height, numberOfChannels;
     unsigned char *data = stbi_load(path, &width, &height, &numberOfChannels, 0);
 
-    if (data)
-    {
+    if (data) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, colorFormat, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
-    } else
-    {
+    } else {
         std::cout << "Failed to load texture" << std::endl;
     }
 
@@ -213,8 +199,7 @@ unsigned int loadTexture(const char *path, unsigned int colorFormat)
     return texture;
 }
 
-void processInput(GLFWwindow *window)
-{
+void processInput(GLFWwindow *window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
@@ -235,31 +220,31 @@ void processInput(GLFWwindow *window)
 
     if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
         camera.ProcessInput(DOWN, deltaTime);
+
+    if (glfwGetKey(window, GLFW_KEY_TAB) != GLFW_REPEAT)
+        if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS)
+            Consts::PLAY_MODE::FREE_FLY = !Consts::PLAY_MODE::FREE_FLY;
+
 }
 
-void framebufferSizeCallback(GLFWwindow *window, int width, int height)
-{
+void framebufferSizeCallback(GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
-void mousePositionCallback(GLFWwindow *window, double xPos, double yPos)
-{
+void mousePositionCallback(GLFWwindow *window, double xPos, double yPos) {
     camera.ProcessMouse(xPos, yPos);
 }
 
-void windowFocusCallback(GLFWwindow *window, int isFocused)
-{
+void windowFocusCallback(GLFWwindow *window, int isFocused) {
     camera.IsWindowFocused = isFocused;
 }
 
-void showFPS(GLFWwindow *window)
-{
+void showFPS(GLFWwindow *window) {
     double currentTime = glfwGetTime();
     double delta = currentTime - lastTime;
     numberOfFrames++;
     // Only update every second (or more)
-    if (delta >= 1.0)
-    {
+    if (delta >= 1.0) {
         double fps = double(numberOfFrames) / delta;
         std::stringstream ss;
         ss << "TrackingShot - " << fps << " FPS]";

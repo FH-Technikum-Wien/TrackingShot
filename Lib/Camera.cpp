@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include "Camera.h"
+#include "Consts.h"
 
 const float MOVEMENT_SPEED = 2.5f;
 const float MOUSE_SENSITIVITY = 0.001f;
@@ -25,6 +26,9 @@ void Camera::ProcessMouse(double xPos, double yPos)
         lastMousePos = glm::vec2(xPos, yPos);
         IsWindowFocused = true;
     }
+
+    if(!Consts::PLAY_MODE::FREE_FLY)
+        return;
 
     xOffset += (lastMousePos.x - (float) xPos) * MOUSE_SENSITIVITY;
     yOffset += (lastMousePos.y - (float) yPos) * MOUSE_SENSITIVITY;

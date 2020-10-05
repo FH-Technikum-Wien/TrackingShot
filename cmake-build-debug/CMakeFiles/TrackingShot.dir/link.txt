@@ -1,3 +1,0 @@
-C:\Users\panag\AppData\Local\JetBrains\Toolbox\apps\CLion\ch-0\202.7319.72\bin\cmake\win\bin\cmake.exe -E rm -f CMakeFiles\TrackingShot.dir/objects.a
-C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\ar.exe cr CMakeFiles\TrackingShot.dir/objects.a @CMakeFiles\TrackingShot.dir\objects1.rsp
-C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE  -std=c++11 -g   -Wl,--whole-archive CMakeFiles\TrackingShot.dir/objects.a -Wl,--no-whole-archive  -o TrackingShot.exe -Wl,--out-implib,libTrackingShot.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\TrackingShot.dir\linklibs.rsp

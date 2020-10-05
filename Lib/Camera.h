@@ -30,19 +30,17 @@ class Camera
 {
 public:
     glm::vec3 Position = glm::vec3(0.0f);
-    glm::quat Orientation = glm::quat(1.0f,0.0f,0.0f,0.0f);
+    glm::quat Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
 
     bool IsWindowFocused = false;
 
     explicit Camera(glm::vec3 position);
 
-    glm::mat4 GetViewMat() const;
+    glm::mat4 GetViewMat();
 
     void ProcessMouse(double xPos, double yPos);
 
     void ProcessInput(Camera_Movement movement, float deltaTime);
-
-    void SetOrientation(glm::quat newRotation);
 
 private:
     glm::mat4 transform = glm::mat4(1.0f);

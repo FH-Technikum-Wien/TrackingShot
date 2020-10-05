@@ -22,12 +22,16 @@
 #include <cmath>
 #include <algorithm>
 #include <list>
+#include <vector>
 
 using namespace std;
 
+
 unsigned int loadTexture(const char *path, unsigned int colorFormat);
 
-void processInput(GLFWwindow *window);
+void processContinuousInput(GLFWwindow *window);
+
+void processSingleInput(GLFWwindow *window, int key, int scancode, int action, int mods);
 
 void framebufferSizeCallback(GLFWwindow *window, int width, int height);
 
@@ -35,7 +39,18 @@ void mousePositionCallback(GLFWwindow *window, double xPos, double yPos);
 
 void windowFocusCallback(GLFWwindow *window, int isFocused);
 
-void showFPS(GLFWwindow *window);
+void showUI(GLFWwindow *window);
+
+enum MovementSpeedLevel {
+    SLOW,
+    NORMAL,
+    FAST,
+    SONIC
+};
+
+void setMovementSpeed(MovementSpeedLevel level);
+
+stringstream lastAction;
 
 float deltaTime = 0.0f;
 float lastFrameTime = 0.0f;
@@ -46,7 +61,39 @@ double lastTime = 0.0;
 
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
-const float MOVEMENT_SPEED = 2.0f;
+list<Object *> worldObjects;
+
+vector<PathPoint> path;
+vector<PathPoint> customPath;
+int pathIndex = 0;
+float pathSectionProgress = 0.0f;
+bool usingCustomPath;
+
+vector<PathPoint> defaultPath = {
+        PathPoint(0.0f, 0.0f, 3.0f, 0.0f, 0.0f, 0.0f),
+        PathPoint(3.0f, 0.0f, 0.0f, 0.0f, 90.0f, 0.0f),
+        PathPoint(0.0f, 0.0f, -3.0f, 0.0f, 180.0f, 0.0f),
+        PathPoint(-3.0f, 0.0f, 0.0f, 0.0f, 270.0f, 0.0f),
+        PathPoint(-3.0f, 5.0f, 0.0f, -70.0f, 270.0f, 0.0f),
+
+        PathPoint(-15.0f, 7.0f, 0.0f, -45.0f, 270.0f, 0.0f),
+        PathPoint(0.0f, 7.0f, -15.0f, -30.0f, 180.0f, 0.0f),
+        PathPoint(15.0f, 7.0f, 0.0f, -30.0f, 90.0f, 0.0f),
+        PathPoint(0.0f, 5.0f, 15.0f, -30.0f, 0.0f, 0.0f),
+
+        PathPoint(0.0f, 2.0f, 0.0f, -15.0f, 90.0f, 0.0f),
+        PathPoint(0.0f, 2.0f, -3.0f, -15.0f, 180.0f, 0.0f),
+        PathPoint(0.0f, 2.0f, 0.0f, -15.0f, 270.0f, 0.0f),
+        PathPoint(3.0f, 2.0f, 0.0f, -15.0f, 270.0f, 0.0f),
+
+        PathPoint(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f),
+        PathPoint(0.0f, 3.0f, -2.0f, 0.0f, 0.0f, 0.0f),
+        PathPoint(0.0f, 2.0f, 0.0f, 0.0f, 0.0f, 0.0f),
+        PathPoint(2.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f),
+        PathPoint(1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f),
+        PathPoint(0.0f, 0.0f, 5.0f, 0.0f, 0.0f, 0.0f),
+        PathPoint(0.0f, 1.0f, 10.0f, 0.0f, 0.0f, 0.0f)
+};
 
 int main() {
     //----------------------------------------------------------------------------------------------------
@@ -77,6 +124,7 @@ int main() {
     glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
     glfwSetCursorPosCallback(window, mousePositionCallback);
     glfwSetWindowFocusCallback(window, windowFocusCallback);
+    glfwSetKeyCallback(window, processSingleInput);
 
     glEnable(GL_DEPTH_TEST);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -91,7 +139,8 @@ int main() {
 
     stbi_set_flip_vertically_on_load(true);
     unsigned int texture1 = loadTexture(Consts::PATHS::TEXTURE_1, GL_RGB);
-    unsigned int texture2 = loadTexture(Consts::PATHS::TEXTURE_2, GL_RGB);
+    unsigned int texture2 = loadTexture(Consts::PATHS::GRID_TEX_1, GL_RGB);
+    unsigned int texture3 = loadTexture(Consts::PATHS::GRID_TEX_2, GL_RGB);
 
     shader.activate();
     // Projection Matrix for adding perspective
@@ -100,37 +149,27 @@ int main() {
                                      (float) Consts::SCREEN::WIDTH / (float) Consts::SCREEN::HEIGHT, 0.1f, 100.0f);
     shader.setMat4("projectionMat", projectionMat);
 
-    Cube cube(&texture1, glm::vec3(), glm::vec3());
-    Plane plane(&texture2, glm::vec3(0, -1, 0), glm::vec3(90, 0, 0));
 
-    //----------------------------------------------------------------------------------------------------
-    // Path
-    //----------------------------------------------------------------------------------------------------
+    // Add objects
+    worldObjects.push_back(new Cube(&texture1, glm::vec3(), glm::vec3()));
+    worldObjects.push_back(new Cube(&texture1, glm::vec3(0.0f, 3.0f, -7.0f), glm::vec3()));
+    worldObjects.push_back(new Cube(&texture1, glm::vec3(-3.0f, 0.0f, 2.0f), glm::vec3(45.0f, 45.0f, 0.0f)));
+    worldObjects.push_back(new Cube(&texture1, glm::vec3(-5.0f, 3.0f, 0.0f), glm::vec3(120.0f, 0.0f, 0.0f)));
+    worldObjects.push_back(new Cube(&texture1, glm::vec3(2.0f, 1.0f, 4.0f), glm::vec3(70.0f, 120.0f, 45.0f)));
+    worldObjects.push_back(new Plane(&texture2, glm::vec3(0, -1, 0), glm::vec3(90, 0, 0)));
 
-    PathPoint path[] = {
-            PathPoint(0.0f, 0.0f, -3.0f),
-            PathPoint(2.0f, 0.0f, 0.0f),
-            PathPoint(4.0f, 1.0f, -2.0f),
-            PathPoint(2.0f, 1.0f, -4.0f),
-            PathPoint(0.0f, 0.0f, -6.0f),
-            PathPoint(-2.0f, 1.0f, -4.0f),
-            PathPoint(-4.0f, 0.0f, -2.0f),
-    };
-    int pathCount = 7;
-
-    float time = 0.0f;
-    int index = 0;
+    path = defaultPath;
     Spline spline;
 
     while (!glfwWindowShouldClose(window)) {
-        showFPS(window);
-        // Delta time calculations
+        showUI(window);
+        // Delta progress calculations
         float currentFrameTime = glfwGetTime();
         deltaTime = currentFrameTime - lastFrameTime;
         lastFrameTime = currentFrameTime;
 
         // Input
-        processInput(window);
+        processContinuousInput(window);
 
         // Sets one color for window (background)
         glClearColor(0.0f, 0.3f, 0.4f, 1.0f);
@@ -138,21 +177,28 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-        // Move camera
-
         if (!Consts::PLAY_MODE::FREE_FLY) {
-            float distance = glm::length((path[(index + 1) % pathCount].Position - path[index].Position));
-            time += deltaTime;
-            float t = (1 / distance) * time;
-            t = min(1.0f, t);
-            camera.Position = spline.Interpolate(path[index - 1].Position, path[index].Position,
-                                                 path[(index + 1) % pathCount].Position,
-                                                 path[(index + 2) % pathCount].Position, t);
+            // Move camera
 
+            float distance = glm::length((path[(pathIndex + 1) % path.size()].Position - path[pathIndex].Position));
+            // Value between 0 and distance
+            pathSectionProgress += Consts::PLAYER::MOVEMENT_SPEED * deltaTime;
+            float t = (1 / distance) * pathSectionProgress;
+            t = min(1.0f, t);
+            camera.Position = spline.Interpolate(path[pathIndex - 1].Position,
+                                                 path[pathIndex].Position,
+                                                 path[(pathIndex + 1) % path.size()].Position,
+                                                 path[(pathIndex + 2) % path.size()].Position, t);
+
+            // Rotate camera
+            camera.Orientation = glm::slerp(path[(pathIndex)].Orientation,
+                                            path[(pathIndex + 1) % path.size()].Orientation, t);
             if (t == 1.0f) {
-                time = 0.0f;
-                index = (index + 1) % pathCount;
+                pathSectionProgress = 0.0f;
+                pathIndex = (pathIndex + 1) % path.size();
             }
+
+
         }
 
         // Activate program
@@ -160,8 +206,8 @@ int main() {
         shader.setMat4("viewMat", camera.GetViewMat());
 
         // render objects
-        cube.render(shader);
-        plane.render(shader);
+        for (Object *object : worldObjects)
+            object->render(shader);
 
         // Swaps the drawn buffer with the buffer that got written to.
         glfwSwapBuffers(window);
@@ -179,8 +225,8 @@ unsigned int loadTexture(const char *path, unsigned int colorFormat) {
     glBindTexture(GL_TEXTURE_2D, texture);
 
     // Set texture wrapping options. S == x-axis | T == y-axis
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     // Set texture filtering options
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -199,9 +245,7 @@ unsigned int loadTexture(const char *path, unsigned int colorFormat) {
     return texture;
 }
 
-void processInput(GLFWwindow *window) {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
+void processContinuousInput(GLFWwindow *window) {
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         camera.ProcessInput(FORWARD, deltaTime);
@@ -220,11 +264,62 @@ void processInput(GLFWwindow *window) {
 
     if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
         camera.ProcessInput(DOWN, deltaTime);
+}
 
-    if (glfwGetKey(window, GLFW_KEY_TAB) != GLFW_REPEAT)
-        if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS)
-            Consts::PLAY_MODE::FREE_FLY = !Consts::PLAY_MODE::FREE_FLY;
+void processSingleInput(GLFWwindow *window, int key, int scancode, int action, int mods) {
 
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
+
+    if (key == GLFW_KEY_TAB && action == GLFW_PRESS) {
+        Consts::PLAY_MODE::FREE_FLY = !Consts::PLAY_MODE::FREE_FLY;
+        lastAction << "Free Fly = " << Consts::PLAY_MODE::FREE_FLY;
+    }
+
+    if (key == GLFW_KEY_1 && action == GLFW_PRESS)
+        setMovementSpeed(SLOW);
+
+    if (key == GLFW_KEY_2 && action == GLFW_PRESS)
+        setMovementSpeed(NORMAL);
+
+    if (key == GLFW_KEY_3 && action == GLFW_PRESS)
+        setMovementSpeed(FAST);
+
+    if (key == GLFW_KEY_4 && action == GLFW_PRESS)
+        setMovementSpeed(SONIC);
+
+    // Path control
+
+    if (key == GLFW_KEY_E && action == GLFW_PRESS) {
+        customPath.emplace_back(camera.Position, camera.Orientation);
+        lastAction << "Custom path node added";
+    }
+
+    if (key == GLFW_KEY_R && action == GLFW_PRESS) {
+        if (!customPath.empty()) {
+            customPath.pop_back();
+            lastAction << "Custom path node deleted";
+        }
+    }
+
+    if (key == GLFW_KEY_ENTER && action == GLFW_PRESS) {
+        path = customPath;
+        usingCustomPath = true;
+        lastAction << "Switched to custom path";
+    }
+
+    if (key == GLFW_KEY_DELETE && action == GLFW_PRESS) {
+        path = defaultPath;
+        customPath.clear();
+        usingCustomPath = false;
+        lastAction << "Deleted custom path";
+    }
+
+    if (key == GLFW_KEY_F1 && action == GLFW_PRESS) {
+        pathIndex = 0;
+        pathSectionProgress = 0.0f;
+        lastAction << "Path restarted";
+    }
 }
 
 void framebufferSizeCallback(GLFWwindow *window, int width, int height) {
@@ -239,18 +334,43 @@ void windowFocusCallback(GLFWwindow *window, int isFocused) {
     camera.IsWindowFocused = isFocused;
 }
 
-void showFPS(GLFWwindow *window) {
+void showUI(GLFWwindow *window) {
     double currentTime = glfwGetTime();
     double delta = currentTime - lastTime;
     numberOfFrames++;
     // Only update every second (or more)
-    if (delta >= 1.0) {
+    if (delta >= 1.5) {
         double fps = double(numberOfFrames) / delta;
         std::stringstream ss;
-        ss << "TrackingShot - " << fps << " FPS]";
+        ss << "TrackingShot ";
+        ss << " [UsingCustomPath=" << usingCustomPath << "]";
+        ss << " [Custom path nodes: " << customPath.size() << "]";
+        ss << " [Current node: " << pathIndex << "]";
+        ss << " [Last Action: " << lastAction.str() << "]";
+        ss << " [" << fps << " FPS]";
         glfwSetWindowTitle(window, ss.str().c_str());
         numberOfFrames = 0;
         lastTime = currentTime;
+        lastAction.str("");
+    }
+}
+
+void setMovementSpeed(MovementSpeedLevel level) {
+
+    lastAction << "Speed changed to: " << level;
+    switch (level) {
+        case SLOW:
+            Consts::PLAYER::MOVEMENT_SPEED = 0.5f;
+            break;
+        case NORMAL:
+            Consts::PLAYER::MOVEMENT_SPEED = 1.0f;
+            break;
+        case FAST:
+            Consts::PLAYER::MOVEMENT_SPEED = 2.0f;
+            break;
+        case SONIC:
+            Consts::PLAYER::MOVEMENT_SPEED = 10.0f;
+            break;
     }
 }
 

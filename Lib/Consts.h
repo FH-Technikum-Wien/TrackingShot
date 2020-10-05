@@ -9,18 +9,27 @@
 
 struct Consts {
 public:
-    struct SCREEN{
+
+    struct PLAYER {
+        inline static float MOVEMENT_SPEED = 1.0f;
+        constexpr static const float CAMERA_SPEED = 2.0f;
+        constexpr static const float MOUSE_SENSITIVITY = 0.001f;
+    };
+
+    struct SCREEN {
     public:
         static const unsigned int WIDTH = 1920;
         static const unsigned int HEIGHT = 1080;
     };
 
-    struct PATHS{
+    struct PATHS {
     public:
         inline static const char *VERTEX_SHADER = "Shaders/shader.vert";
         inline static const char *FRAGMENT_SHADER = "Shaders/shader.frag";
         inline static const char *TEXTURE_1 = "art/textures/woodenCrate.jpg";
         inline static const char *TEXTURE_2 = "art/textures/brickWall.jpg";
+        inline static const char *GRID_TEX_1 = "art/textures/texture_09.png";
+        inline static const char *GRID_TEX_2 = "art/textures/texture_13.png";
     };
 
     struct RENDERING{

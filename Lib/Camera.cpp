@@ -33,27 +33,27 @@ void Camera::ProcessMouse(double xPos, double yPos) {
 
 void Camera::ProcessInput(Camera_Movement movement, float deltaTime)
 {
-    const float cameraSpeed = Consts::PLAYER::CAMERA_SPEED * deltaTime;
+    const float movementSpeed = Consts::PLAYER::MOVEMENT_SPEED * deltaTime;
 
     switch (movement)
     {
         case FORWARD:
-            Position += Orientation * glm::vec3(0.0f, 0.0f, -1.0f) * cameraSpeed;
+            Position += Orientation * glm::vec3(0.0f, 0.0f, -1.0f) * movementSpeed;
             break;
         case BACKWARD:
-            Position -= Orientation * glm::vec3(0.0f, 0.0f, -1.0f) * cameraSpeed;
+            Position -= Orientation * glm::vec3(0.0f, 0.0f, -1.0f) * movementSpeed;
             break;
         case LEFT:
-            Position -= Orientation * glm::vec3(1.0f, 0.0f, 0.0f) * cameraSpeed;
+            Position -= Orientation * glm::vec3(1.0f, 0.0f, 0.0f) * movementSpeed;
             break;
         case RIGHT:
-            Position += Orientation * glm::vec3(1.0f, 0.0f, 0.0f) * cameraSpeed;
+            Position += Orientation * glm::vec3(1.0f, 0.0f, 0.0f) * movementSpeed;
             break;
         case UP:
-            Position += Orientation * glm::vec3(0.0f, 1.0f, 0.0f) * cameraSpeed;
+            Position += Orientation * glm::vec3(0.0f, 1.0f, 0.0f) * movementSpeed;
             break;
         case DOWN:
-            Position -= Orientation * glm::vec3(0.0f, 1.0f, 0.0f) * cameraSpeed;
+            Position -= Orientation * glm::vec3(0.0f, 1.0f, 0.0f) * movementSpeed;
             break;
     }
 }

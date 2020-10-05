@@ -15,6 +15,7 @@
 #include "Lib/Datatypes/Spline.h"
 #include "Lib/Objects/Plane.h"
 #include "Lib/Consts.h"
+#include "Lib/Objects/TriangleThing.h"
 
 #include <iostream>
 #include <cmath>
@@ -137,9 +138,9 @@ int main() {
     Shader shader(Consts::PATHS::VERTEX_SHADER, Consts::PATHS::FRAGMENT_SHADER);
 
     stbi_set_flip_vertically_on_load(true);
-    unsigned int texture1 = loadTexture(Consts::PATHS::TEXTURE_1, GL_RGB);
-    unsigned int texture2 = loadTexture(Consts::PATHS::GRID_TEX_1, GL_RGB);
-    unsigned int texture3 = loadTexture(Consts::PATHS::GRID_TEX_2, GL_RGB);
+    unsigned int textureGrid = loadTexture(Consts::PATHS::TEXTURE_GRID, GL_RGB);
+    unsigned int textureCrate = loadTexture(Consts::PATHS::TEXTURE_CRATE, GL_RGB);
+    unsigned int textureTriangle = loadTexture(Consts::PATHS::TEXTURE_BRICK, GL_RGB);
 
     shader.activate();
     // Projection Matrix for adding perspective
@@ -150,12 +151,18 @@ int main() {
 
 
     // Add objects
-    worldObjects.push_back(new Cube(&texture1, glm::vec3(), glm::vec3()));
-    worldObjects.push_back(new Cube(&texture1, glm::vec3(0.0f, 3.0f, -7.0f), glm::vec3()));
-    worldObjects.push_back(new Cube(&texture1, glm::vec3(-3.0f, 0.0f, 2.0f), glm::vec3(45.0f, 45.0f, 0.0f)));
-    worldObjects.push_back(new Cube(&texture1, glm::vec3(-5.0f, 3.0f, 0.0f), glm::vec3(120.0f, 0.0f, 0.0f)));
-    worldObjects.push_back(new Cube(&texture1, glm::vec3(2.0f, 1.0f, 4.0f), glm::vec3(70.0f, 120.0f, 45.0f)));
-    worldObjects.push_back(new Plane(&texture2, glm::vec3(0, -1, 0), glm::vec3(90, 0, 0)));
+    worldObjects.push_back(new Plane(&textureGrid, glm::vec3(0, -1, 0), glm::vec3(90, 0, 0)));
+    worldObjects.push_back(new Cube(&textureCrate, glm::vec3(), glm::vec3()));
+    worldObjects.push_back(new Cube(&textureCrate, glm::vec3(0.0f, 3.0f, -7.0f), glm::vec3()));
+    worldObjects.push_back(new Cube(&textureCrate, glm::vec3(-3.0f, 0.0f, 2.0f), glm::vec3(45.0f, 45.0f, 0.0f)));
+    worldObjects.push_back(new Cube(&textureCrate, glm::vec3(-5.0f, 3.0f, 0.0f), glm::vec3(120.0f, 0.0f, 0.0f)));
+    worldObjects.push_back(new Cube(&textureCrate, glm::vec3(2.0f, 1.0f, 4.0f), glm::vec3(70.0f, 120.0f, 45.0f)));
+    worldObjects.push_back(
+            new TriangleThing(&textureTriangle, glm::vec3(-3.0f, 0.0f, -4.0f), glm::vec3(0.0f, 0.0f, 0.0f)));
+    worldObjects.push_back(
+            new TriangleThing(&textureTriangle, glm::vec3(-4.0f, 2.0f, 4.0f), glm::vec3(90.0f, 0.0f, 45.0f)));
+    worldObjects.push_back(
+            new TriangleThing(&textureTriangle, glm::vec3(4.0f, 1.0f, -4.0f), glm::vec3(70.0f, 120.0f, 45.0f)));
 
     cameraPath = defaultPath;
     Spline spline(0, 0, 0);

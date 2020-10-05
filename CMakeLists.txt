@@ -8,7 +8,7 @@ include_directories(glad)
 
 link_directories(OpenGL/lib)
 
-set(SOURCE_FILES main.cpp OpenGL/glad/glad.c Shaders/Shader.cpp Shaders/Shader.h Lib/Camera.cpp Lib/Camera.h Lib/Datatypes/PathPoint.cpp Lib/Datatypes/PathPoint.h Lib/Datatypes/Spline.cpp Lib/Datatypes/Spline.h Lib/Objects/Cube.h Lib/Objects/Plane.h Lib/Objects/Object.h Lib/Consts.h)
+set(SOURCE_FILES main.cpp OpenGL/glad/glad.c Shaders/Shader.cpp Shaders/Shader.h Lib/Camera.cpp Lib/Camera.h Lib/Datatypes/PathPoint.cpp Lib/Datatypes/PathPoint.h Lib/Datatypes/Spline.cpp Lib/Datatypes/Spline.h Lib/Objects/Cube.h Lib/Objects/Plane.h Lib/Objects/Object.h Lib/Consts.h Lib/Objects/TriangleThing.h)
 add_executable(TrackingShot ${SOURCE_FILES})
 
 find_library(glfw3 REQUIRED)

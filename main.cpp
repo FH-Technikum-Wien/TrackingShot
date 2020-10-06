@@ -83,16 +83,17 @@ vector<PathPoint> defaultPath = {
 
         PathPoint(0.0f, 2.0f, 0.0f, -15.0f, 90.0f, 0.0f),
         PathPoint(0.0f, 2.0f, -3.0f, -15.0f, 180.0f, 0.0f),
-        PathPoint(0.0f, 2.0f, 0.0f, -15.0f, 270.0f, 0.0f),
-        PathPoint(3.0f, 2.0f, 0.0f, -15.0f, 270.0f, 0.0f),
+        PathPoint(-3.0f, 2.0f, 0.0f, -15.0f, 90.0f, 0.0f),
+        PathPoint(0.0f, 2.0f, 3.0f, 0.0f, 0.0f, 0.0f),
 
-        PathPoint(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f),
-        PathPoint(0.0f, 3.0f, -2.0f, 0.0f, 0.0f, 0.0f),
+        PathPoint(0.0f, 2.0f, 0.0f, -45.0f, 0.0f, 0.0f),
+        PathPoint(0.0f, 4.0f, 0.0f, -90.0f, 0.0f, 0.0f),
+        PathPoint(0.0f, 6.0f, 0.0f, -45.0f, 0.0f, 0.0f),
         PathPoint(0.0f, 2.0f, 0.0f, 0.0f, 0.0f, 0.0f),
-        PathPoint(2.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f),
-        PathPoint(1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f),
+        PathPoint(0.0f, 2.0f, 1.0f, 0.0f, 0.0f, 0.0f),
         PathPoint(0.0f, 0.0f, 5.0f, 0.0f, 0.0f, 0.0f),
-        PathPoint(0.0f, 1.0f, 10.0f, 0.0f, 0.0f, 0.0f)
+        PathPoint(0.0f, 1.0f, 7.0f, 0.0f, 0.0f, 0.0f),
+        PathPoint(0.0f, 2.0f, 10.0f, 0.0f, 0.0f, 0.0f)
 };
 
 int main() {

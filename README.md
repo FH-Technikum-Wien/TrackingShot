@@ -9,6 +9,7 @@ A small project for that implementes a tracking shot using OpenGL
 ### General
 |  |  |
 | --- | --- |
+| `ESC` | Close program |
 | `1,2,3,4` | Change movement speed (1 = slow, 2 = normal, 3 = fast, 4 = sonic) |
 | `TAB` | Switch between "Free-Fly" and tracking shot |
 | `E` | Add custom path point |

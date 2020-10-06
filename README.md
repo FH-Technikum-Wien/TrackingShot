@@ -1,6 +1,6 @@
 In development, needs A LOT of restructuring and clean-up.
 
-#TrackingShot
+# TrackingShot
 
 A small project for that implementes a tracking shot using OpenGL
 

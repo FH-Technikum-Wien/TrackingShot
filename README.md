@@ -21,7 +21,7 @@ A small project for that implementes a tracking shot using OpenGL
 |  |  |
 | --- | --- |
 | `F1` | Go to first path point |
-| `Left-Arrow` | Go to first path point |
+| `Left-Arrow` | Go to previous path point |
 | `Right-Arror` | Go to next path point |
 | `F` | Focus (jump to) current path point |
 

@@ -16,7 +16,7 @@ glm::vec3 Spline::GetSplineTangentNextP(glm::vec3 p0, glm::vec3 p1, glm::vec3 p2
            (1 - Tension) * (1 - Bias) * (1 + Continuity) * 0.5f * (p2 - p1);
 }
 
-glm::vec3 Spline::Interpolate(glm::vec3 prev, glm::vec3 curr, glm::vec3 next, glm::vec3 nextNext, float t) const
+glm::vec3 Spline::Interpolate(glm::vec3 prev, glm::vec3 curr, glm::vec3 next, glm::vec3 nextNext, float t)
 {
     float t2 = t * t;
     float t3 = t2 * t;

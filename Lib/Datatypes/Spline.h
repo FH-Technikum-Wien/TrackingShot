@@ -32,7 +32,7 @@ public:
 
     glm::vec3 GetSplineTangentNextP(glm::vec3 p0, glm::vec3 p1, glm::vec3 p2) const;
 
-    glm::vec3 Interpolate(glm::vec3 prev, glm::vec3 curr, glm::vec3 next, glm::vec3 nextNext, float t) const;
+    glm::vec3 Interpolate(glm::vec3 prev, glm::vec3 curr, glm::vec3 next, glm::vec3 nextNext, float t);
 
 private:
     float Tension;

@@ -1,16 +1,7 @@
-//
-// Created by David on 10/5/2020.
-//
-
 #ifndef TRACKINGSHOT_PLANE_H
 #define TRACKINGSHOT_PLANE_H
 
-#include <glm/vec3.hpp>
-#include <glm/gtc/quaternion.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include "../../Shaders/Shader.h"
-
-
+#include "Object.h"
 
 class Plane : public Object
 {

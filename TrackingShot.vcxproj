@@ -143,17 +143,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Lib\Camera.cpp" />
+    <ClCompile Include="Lib\Objects\Object.cpp" />
+    <ClCompile Include="Lib\World\Input.cpp" />
+    <ClCompile Include="Lib\World\Camera.cpp" />
     <ClCompile Include="Lib\Datatypes\PathPoint.cpp" />
     <ClCompile Include="Lib\Datatypes\Spline.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="OpenGL\glad\glad.c" />
     <ClCompile Include="OpenGL\include\glm\detail\glm.cpp" />
     <ClCompile Include="OpenGL\include\glm\out\build\x64-Debug (default)\CMakeFiles\ShowIncludes\main.c" />
+    <ClCompile Include="Lib\Datatypes\Path.cpp" />
     <ClCompile Include="Shaders\Shader.cpp" />
+    <ClCompile Include="Lib\World\World.cpp" />
+    <ClCompile Include="Lib\Datatypes\Squad.cpp" />
+    <ClCompile Include="Lib\Util.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Lib\Camera.h" />
+    <ClInclude Include="Lib\World\Input.h" />
+    <ClInclude Include="Lib\World\Camera.h" />
     <ClInclude Include="Lib\Consts.h" />
     <ClInclude Include="Lib\Datatypes\PathPoint.h" />
     <ClInclude Include="Lib\Datatypes\Spline.h" />
@@ -311,7 +318,11 @@
     <ClInclude Include="OpenGL\include\glm\vector_relational.hpp" />
     <ClInclude Include="OpenGL\include\KHR\khrplatform.h" />
     <ClInclude Include="OpenGL\include\stb-image\stb_image.h" />
+    <ClInclude Include="Lib\Datatypes\Path.h" />
     <ClInclude Include="Shaders\Shader.h" />
+    <ClInclude Include="Lib\World\World.h" />
+    <ClInclude Include="Lib\Datatypes\Squad.h" />
+    <ClInclude Include="Lib\Util.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="art\textures\awesomeface.png" />

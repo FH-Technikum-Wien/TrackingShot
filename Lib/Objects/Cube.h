@@ -1,14 +1,6 @@
-//
-// Created by David on 10/4/2020.
-//
-
 #ifndef TRACKINGSHOT_CUBE_H
 #define TRACKINGSHOT_CUBE_H
 
-
-#include <glm/vec3.hpp>
-#include <glm/gtc/quaternion.hpp>
-#include "../../Shaders/Shader.h"
 #include "Object.h"
 
 

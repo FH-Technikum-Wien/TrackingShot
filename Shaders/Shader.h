@@ -2,14 +2,7 @@
 #define SHADER_H
 
 #include <string>
-#include <fstream>
-#include <sstream>
-#include <iostream>
-
-#include <glad/glad.h>
-#include <glm/detail/type_mat.hpp>
-#include <glm/detail/type_mat4x4.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include <glm/matrix.hpp>
 
 class Shader
 {

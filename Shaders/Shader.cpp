@@ -1,8 +1,9 @@
-//
-// Created by David on 9/28/2020.
-//
-
 #include "Shader.h"
+#include <glad\glad.h>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <glm\gtc\type_ptr.hpp>
 
 Shader::Shader(const char *vertexShaderPath, const char *fragmentShaderPath)
 {

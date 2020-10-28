@@ -1,10 +1,6 @@
-//
-// Created by David on 10/3/2020.
-//
-
-#include <iostream>
 #include "Camera.h"
-#include "Consts.h"
+#include <glm\gtx\transform.hpp>
+#include "World.h"
 
 Camera::Camera(glm::vec3 position)
 {
@@ -21,38 +17,38 @@ void Camera::ProcessMouse(double xPos, double yPos) {
         IsWindowFocused = true;
     }
 
-    if (!Consts::PLAY_MODE::FREE_FLY)
+    if (!World::FreeFly)
         return;
 
-    xOffset += (lastMousePos.x - (float) xPos) * Consts::PLAYER::MOUSE_SENSITIVITY;
-    yOffset += (lastMousePos.y - (float) yPos) * Consts::PLAYER::MOUSE_SENSITIVITY;
+    xOffset += (lastMousePos.x - (float) xPos) * MouseSensitivity;
+    yOffset += (lastMousePos.y - (float) yPos) * MouseSensitivity;
     lastMousePos = glm::vec2(xPos, yPos);
 
     Orientation = glm::quat(glm::vec3(yOffset, xOffset, 0.0f));
 }
 
-void Camera::ProcessInput(Camera_Movement movement, float deltaTime)
+void Camera::ProcessInput(CameraMovement movement)
 {
-    const float movementSpeed = Consts::PLAYER::MOVEMENT_SPEED * deltaTime;
+    const float movementSpeed = MovementSpeed * World::DeltaTime;
 
     switch (movement)
     {
-        case FORWARD:
+        case CameraMovement::FORWARD:
             Position += Orientation * glm::vec3(0.0f, 0.0f, -1.0f) * movementSpeed;
             break;
-        case BACKWARD:
+        case CameraMovement::BACKWARD:
             Position -= Orientation * glm::vec3(0.0f, 0.0f, -1.0f) * movementSpeed;
             break;
-        case LEFT:
+        case CameraMovement::LEFT:
             Position -= Orientation * glm::vec3(1.0f, 0.0f, 0.0f) * movementSpeed;
             break;
-        case RIGHT:
+        case CameraMovement::RIGHT:
             Position += Orientation * glm::vec3(1.0f, 0.0f, 0.0f) * movementSpeed;
             break;
-        case UP:
+        case CameraMovement::UP:
             Position += Orientation * glm::vec3(0.0f, 1.0f, 0.0f) * movementSpeed;
             break;
-        case DOWN:
+        case CameraMovement::DOWN:
             Position -= Orientation * glm::vec3(0.0f, 1.0f, 0.0f) * movementSpeed;
             break;
     }

@@ -449,6 +449,12 @@
     <None Include="OpenGL\include\glm\gtx\wrap.inl" />
     <None Include="OpenGL\include\glm\out\build\x64-Debug (default)\CMakeFiles\3.17.20032601-MSVC_2\CMakeDetermineCompilerABI_C.bin" />
     <None Include="OpenGL\include\glm\out\build\x64-Debug (default)\CMakeFiles\3.17.20032601-MSVC_2\CMakeDetermineCompilerABI_CXX.bin" />
+    <None Include="Shaders\depthMap.frag" />
+    <None Include="Shaders\depthMap.vert" />
+    <None Include="Shaders\shader.frag" />
+    <None Include="Shaders\shader.vert" />
+    <None Include="Shaders\shadowShader.frag" />
+    <None Include="Shaders\shadowShader.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

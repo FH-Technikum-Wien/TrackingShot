@@ -89,6 +89,11 @@ void World::update(Shader& shader)
 	shader.activate();
 	shader.setMat4("viewMat", camera.GetViewMat());
 
+	renderWorld(shader);
+}
+
+void World::renderWorld(Shader& shader)
+{
 	// Render objects.
 	for (Object* object : objects) {
 		object->render(shader);

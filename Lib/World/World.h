@@ -33,6 +33,7 @@ public:
 
 	void addObject(Object* object);
 	void update(Shader& shader);
+[]	void renderWorld(Shader& shader);
 
 private:
 	inline static Camera camera{ glm::vec3(0.0f, 0.0f, 3.0f) };

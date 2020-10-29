@@ -7,17 +7,17 @@ class Plane : public Object
 {
 public:
     Plane(const unsigned int *texture, glm::vec3 position, glm::vec3 eulerAngles) : Object(texture, position, eulerAngles) {
-        init(vertices, 30);
+        init(vertices, 48);
     }
 
 private:
-    const float vertices[30] {
-            10.0f, 10.0f, 0.0f, 20.0f, 0.0f,
-            10.0f, -10.0f, 0.0f, 20.0f, 20.0f,
-            -10.0f, 10.0f, 0.0f, 0.0f, 0.0f,
-            10.0f, -10.0f, 0.0f, 20.0f, 20.0f,
-            -10.0f, -10.0f, 0.0f, 0.0f, 20.0f,
-            -10.0f, 10.0f, 0.0f, 0.0f, 0.0f,
+    const float vertices[48] {
+             10.0f,  10.0f, 0.0f, 0.0f, 0.0f, -1.0f, 20.0f,  0.0f,
+             10.0f, -10.0f, 0.0f, 0.0f, 0.0f, -1.0f, 20.0f, 20.0f,
+            -10.0f,  10.0f, 0.0f, 0.0f, 0.0f, -1.0f,  0.0f,  0.0f,
+             10.0f, -10.0f, 0.0f, 0.0f, 0.0f, -1.0f, 20.0f, 20.0f,
+            -10.0f, -10.0f, 0.0f, 0.0f, 0.0f, -1.0f,  0.0f, 20.0f,
+            -10.0f,  10.0f, 0.0f, 0.0f, 0.0f, -1.0f,  0.0f,  0.0f,
     };
 };
 

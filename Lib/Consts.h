@@ -16,6 +16,13 @@ public:
     public:
         inline static const char *VERTEX_SHADER = "Shaders/shader.vert";
         inline static const char *FRAGMENT_SHADER = "Shaders/shader.frag";
+        inline static const char *DEPTH_MAP_VERT_SHADER = "Shaders/depthMap.vert";
+        inline static const char *DEPTH_MAP_FRAG_SHADER = "Shaders/depthMap.frag";
+        inline static const char* DEPTH_MAP_VISUAL_VERT = "Shaders/depthMapVisual.vert";
+        inline static const char* DEPTH_MAP_VISUAL_FRAG = "Shaders/depthMapVisual.frag";
+        inline static const char* SHADOW_VERT_SHADER = "Shaders/shadowShader.vert";
+        inline static const char* SHADOW_FRAG_SHADER = "Shaders/shadowShader.frag";
+
         inline static const char *TEXTURE_CRATE = "Art/Textures/woodenCrate.jpg";
         inline static const char *TEXTURE_BRICK = "Art/Textures/brickWall.jpg";
         inline static const char *TEXTURE_GRID = "Art/Textures/texture_09.png";

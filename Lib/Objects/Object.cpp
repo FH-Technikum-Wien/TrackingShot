@@ -2,11 +2,11 @@
 #include <glad\glad.h>
 #include <glm\gtc\matrix_transform.hpp>
 
-Object::Object(const unsigned int* texture, glm::vec3 position, glm::vec3 eulerAngles)
+Object::Object(const Material& material, glm::vec3 position, glm::vec3 eulerAngles)
 {
     translate(position);
     rotate(eulerAngles);
-    this->texture = *texture;
+    this->material = material;
 }
 
 Object::~Object()
@@ -20,10 +20,15 @@ void Object::render(const Shader& shader)
 {
     // Add texture
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture);
+    glBindTexture(GL_TEXTURE_2D, material.texture);
 
     glBindVertexArray(VAO);
     shader.setMat4("modelMat", Transform);
+    shader.setFloat("ambientStrength", material.ambientStrength);
+    shader.setFloat("diffuseStrength", material.diffuseStrength);
+    shader.setFloat("specularStrength", material.specularStrength);
+    shader.setFloat("focus", material.focus);
+    shader.setVec3("textureColor", material.color);
     glDrawArrays(GL_TRIANGLES, 0, vertexCount);
 }
 

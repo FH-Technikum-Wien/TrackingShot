@@ -1,6 +1,6 @@
 #include "Path.h"
 #include "../World/World.h"
-#include "Squad.h"
+#include "../Math/Squad.h"
 
 Path::Path(std::vector<PathPoint> pathPoints)
 {

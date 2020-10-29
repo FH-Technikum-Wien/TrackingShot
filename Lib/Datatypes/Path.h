@@ -3,7 +3,7 @@
 
 #include "PathPoint.h"
 #include "../World/Camera.h"
-#include "Spline.h"
+#include "../Math/Spline.h"
 
 class Path
 {

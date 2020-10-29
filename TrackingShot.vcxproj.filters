@@ -21,9 +21,6 @@
     <ClCompile Include="Lib\Datatypes\PathPoint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Lib\Datatypes\Spline.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="OpenGL\glad\glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -51,10 +48,19 @@
     <ClCompile Include="Lib\Util.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Lib\Datatypes\Squad.cpp">
+    <ClCompile Include="Lib\Objects\Object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Lib\Objects\Object.cpp">
+    <ClCompile Include="Lib\Math\Spline.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\Math\Squad.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\Datatypes\Material.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\World\Light.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -75,9 +81,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Lib\Datatypes\PathPoint.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Lib\Datatypes\Spline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Shaders\Shader.h">
@@ -548,7 +551,16 @@
     <ClInclude Include="Lib\Util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Lib\Datatypes\Squad.h">
+    <ClInclude Include="Lib\Math\Squad.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Math\Spline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Datatypes\Material.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\World\Light.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

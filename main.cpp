@@ -2,8 +2,10 @@
 #include <GLFW/glfw3.h>
 
 #include <stdexcept>
+#include <glm/vec3.hpp>
 #include <glm/matrix.hpp>
 #include <glm\gtc\matrix_transform.hpp>
+#include <glm\gtc\type_ptr.hpp>
 
 #include "Lib/Consts.h"
 #include "Lib/Util.h"
@@ -15,9 +17,11 @@
 #include "Lib/Objects/TriangleThing.h"
 
 #include "Shaders/Shader.h"
-#include <glm\gtc\type_ptr.hpp>
+#include "Lib/World/Light.h"
 
 using namespace std;
+
+void addObjects(World& world);
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 
@@ -73,41 +77,36 @@ int main() {
 	// RENDERING
 	//----------------------------------------------------------------------------------------------------
 
-	// Load textures
-	unsigned int textureGrid = Util::LoadTexture(Consts::PATHS::TEXTURE_GRID, GL_RGB);
-	unsigned int textureCrate = Util::LoadTexture(Consts::PATHS::TEXTURE_CRATE, GL_RGB);
-	unsigned int textureTriangle = Util::LoadTexture(Consts::PATHS::TEXTURE_BRICK, GL_RGB);
 
 	// Projection Matrix for adding perspective.
 	glm::mat4 projectionMat;
 	projectionMat = glm::perspective(glm::radians(45.0f), (float)Consts::SCREEN::WIDTH / (float)Consts::SCREEN::HEIGHT, 0.1f, 100.0f);
 
+
+
 	Shader shader(Consts::PATHS::SHADOW_VERT_SHADER, Consts::PATHS::SHADOW_FRAG_SHADER);
 	shader.activate();
-	shader.setVec3("lightColor", glm::vec3(0.3f));
-	shader.setFloat("ambientAmount", 0.15f);
 	shader.setInt("diffuseTexture", 0);
 	shader.setInt("shadowMap", 1);
+	shader.setMat4("projectionMat", projectionMat);
+	shader.setFloat("ambientLightAmount", 0.15f);
+
+
+	Light light = Light(glm::vec3(-4.0f, 10.0f, 0.0f), false);
+	glm::mat4 lightSpaceMat = light.activateLight(shader);
 
 	World world;
-	// Add objects.
-	world.addObject(new Plane(&textureTriangle, glm::vec3(0, -1, 0), glm::vec3(90, 0, 0)));
-	world.addObject(new Cube(&textureCrate, glm::vec3(), glm::vec3()));
-	world.addObject(new Cube(&textureCrate, glm::vec3(0.0f, 3.0f, -7.0f), glm::vec3()));
-	world.addObject(new Cube(&textureCrate, glm::vec3(-3.0f, 0.0f, 2.0f), glm::vec3(45.0f, 45.0f, 0.0f)));
-	world.addObject(new Cube(&textureCrate, glm::vec3(-5.0f, 3.0f, 0.0f), glm::vec3(120.0f, 0.0f, 0.0f)));
-	world.addObject(new Cube(&textureCrate, glm::vec3(2.0f, 1.0f, 4.0f), glm::vec3(70.0f, 120.0f, 45.0f)));
-	world.addObject(new TriangleThing(&textureTriangle, glm::vec3(-3.0f, 0.0f, -4.0f), glm::vec3(0.0f, 0.0f, 0.0f)));
-	world.addObject(new TriangleThing(&textureTriangle, glm::vec3(-4.0f, 2.0f, 4.0f), glm::vec3(90.0f, 0.0f, 45.0f)));
-	world.addObject(new TriangleThing(&textureTriangle, glm::vec3(4.0f, 1.0f, -4.0f), glm::vec3(70.0f, 120.0f, 45.0f)));
+	addObjects(world);
 
 
+	//----------------------------------------------------------------------------------------------------
 	// SHADOWS
-	const unsigned int SHADOW_WITH = 1024, SHADOW_HEIGHT = 1024;
+	//----------------------------------------------------------------------------------------------------
 
 	// DepthMap Shader
 	Shader depthMapShader(Consts::PATHS::DEPTH_MAP_VERT_SHADER, Consts::PATHS::DEPTH_MAP_FRAG_SHADER);
-
+	depthMapShader.activate();
+	depthMapShader.setMat4("lightSpaceMat", lightSpaceMat);
 	// Framebuffer for rendering the depthMap.
 	unsigned int depthMapFBO;
 	glGenFramebuffers(1, &depthMapFBO);
@@ -116,11 +115,14 @@ int main() {
 	glGenTextures(1, &depthMap);
 	glBindTexture(GL_TEXTURE_2D, depthMap);
 	// Set resolution and only use 'DEPTH_COMPONENT', only need depth.
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WITH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, Consts::RENDERING::SHADOW_WITH, Consts::RENDERING::SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// Everything outside of light frustum has depth of 1.0 -> no shadow.
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 	// Attach depth texture to FrameBufferObject's depth buffer.
 	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
@@ -128,15 +130,6 @@ int main() {
 	glDrawBuffer(GL_NONE);
 	glReadBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-
-	glm::vec3 lightPos = glm::vec3(-2.0f, 4.0f, -1.0f);
-	float nearPlane = 1.0f, farPlane = 10.0f;
-	glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, nearPlane, farPlane);
-	glm::mat4 lightViewMat = glm::lookAt(lightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-
-	// Transforms world space to light space.
-	glm::mat4 lightSpaceMat = lightProjection * lightViewMat;
 
 	while (!glfwWindowShouldClose(window)) {
 
@@ -148,19 +141,18 @@ int main() {
 		// Handle input.
 		Input::ProcessContinuousInput(window);
 
-
 		// Render depth of scene to depthMap texture
 		depthMapShader.activate();
-		depthMapShader.setMat4("lightSpaceMat", lightSpaceMat);
-
-		glViewport(0, 0, SHADOW_WITH, SHADOW_HEIGHT);
+		glViewport(0, 0, Consts::RENDERING::SHADOW_WITH, Consts::RENDERING::SHADOW_HEIGHT);
 		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
 		glClear(GL_DEPTH_BUFFER_BIT);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, textureCrate);
+
+		// Prevent peter panning by using back-faces
+		glCullFace(GL_FRONT);
 		// Render world's depth
 		world.renderWorld(depthMapShader);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glCullFace(GL_BACK);
 
 		// Reset viewport.
 		glViewport(0, 0, Consts::SCREEN::WIDTH, Consts::SCREEN::HEIGHT);
@@ -168,12 +160,7 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		shader.activate();
-		shader.setMat4("projectionMat", projectionMat);
-		shader.setMat4("lightSpaceMat", lightSpaceMat);
-		shader.setVec3("lightPos", lightPos);
 		shader.setVec3("cameraPos", World::GetCamera().Position);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, textureCrate);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, depthMap);
 
@@ -188,6 +175,26 @@ int main() {
 
 	glfwTerminate();
 	return 0;
+}
+
+void addObjects(World& world) {
+	Material redMat = Material::GridMat(glm::vec3(1.0f, 0.0f, 0.0f));
+	Material greenMat = Material::GridMat(glm::vec3(0.0f, 1.0f, 0.0f));
+	Material blueMat = Material::GridMat(glm::vec3(0.0f, 1.0f, 1.0f));
+	Material whiteMat = Material::GridMat();
+	Material brickMat = Material::BrickMat();
+	// Add objects.
+	world.addObject(new Plane(whiteMat, glm::vec3(0, -1, 0), glm::vec3(90, 0, 0)));
+	world.addObject(new Cube(redMat, glm::vec3(), glm::vec3()));
+	world.addObject(new Cube(greenMat, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(), glm::vec3(0.5f)));
+	world.addObject(new Cube(redMat, glm::vec3(0.0f, 3.0f, -7.0f), glm::vec3()));
+	world.addObject(new Cube(redMat, glm::vec3(-3.0f, 0.0f, 2.0f), glm::vec3(45.0f, 45.0f, 0.0f)));
+	world.addObject(new Cube(redMat, glm::vec3(-5.0f, 3.0f, 0.0f), glm::vec3(120.0f, 0.0f, 0.0f)));
+	world.addObject(new Cube(blueMat, glm::vec3(2.0f, 1.0f, 4.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(2.0f, 1.0f, 2.0f)));
+	world.addObject(new Cube(redMat, glm::vec3(2.0f, 2.5f, 4.0f), glm::vec3(70.0f, 120.0f, 45.0f)));
+	world.addObject(new TriangleThing(brickMat, glm::vec3(-3.0f, 0.0f, -4.0f), glm::vec3(0.0f, 0.0f, 0.0f)));
+	world.addObject(new TriangleThing(brickMat, glm::vec3(-4.0f, 2.0f, 4.0f), glm::vec3(90.0f, 0.0f, 45.0f)));
+	world.addObject(new TriangleThing(brickMat, glm::vec3(4.0f, 1.0f, -4.0f), glm::vec3(70.0f, 120.0f, 45.0f)));
 }
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height) {

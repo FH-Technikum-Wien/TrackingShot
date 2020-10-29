@@ -147,15 +147,17 @@
     <ClCompile Include="Lib\World\Input.cpp" />
     <ClCompile Include="Lib\World\Camera.cpp" />
     <ClCompile Include="Lib\Datatypes\PathPoint.cpp" />
-    <ClCompile Include="Lib\Datatypes\Spline.cpp" />
+    <ClCompile Include="Lib\Math\Spline.cpp" />
+    <ClCompile Include="Lib\World\Light.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Lib\Datatypes\Material.cpp" />
     <ClCompile Include="OpenGL\glad\glad.c" />
     <ClCompile Include="OpenGL\include\glm\detail\glm.cpp" />
     <ClCompile Include="OpenGL\include\glm\out\build\x64-Debug (default)\CMakeFiles\ShowIncludes\main.c" />
     <ClCompile Include="Lib\Datatypes\Path.cpp" />
     <ClCompile Include="Shaders\Shader.cpp" />
     <ClCompile Include="Lib\World\World.cpp" />
-    <ClCompile Include="Lib\Datatypes\Squad.cpp" />
+    <ClCompile Include="Lib\Math\Squad.cpp" />
     <ClCompile Include="Lib\Util.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -163,11 +165,13 @@
     <ClInclude Include="Lib\World\Camera.h" />
     <ClInclude Include="Lib\Consts.h" />
     <ClInclude Include="Lib\Datatypes\PathPoint.h" />
-    <ClInclude Include="Lib\Datatypes\Spline.h" />
+    <ClInclude Include="Lib\Math\Spline.h" />
     <ClInclude Include="Lib\Objects\Cube.h" />
     <ClInclude Include="Lib\Objects\Object.h" />
     <ClInclude Include="Lib\Objects\Plane.h" />
     <ClInclude Include="Lib\Objects\TriangleThing.h" />
+    <ClInclude Include="Lib\Datatypes\Material.h" />
+    <ClInclude Include="Lib\World\Light.h" />
     <ClInclude Include="OpenGL\include\glad\glad.h" />
     <ClInclude Include="OpenGL\include\GLFW\glfw3.h" />
     <ClInclude Include="OpenGL\include\GLFW\glfw3native.h" />
@@ -321,7 +325,7 @@
     <ClInclude Include="Lib\Datatypes\Path.h" />
     <ClInclude Include="Shaders\Shader.h" />
     <ClInclude Include="Lib\World\World.h" />
-    <ClInclude Include="Lib\Datatypes\Squad.h" />
+    <ClInclude Include="Lib\Math\Squad.h" />
     <ClInclude Include="Lib\Util.h" />
   </ItemGroup>
   <ItemGroup>

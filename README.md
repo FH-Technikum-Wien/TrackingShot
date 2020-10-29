@@ -14,7 +14,6 @@ A small project for that implementes a tracking shot using OpenGL
 | `TAB` | Switch between "Free-Fly" and tracking shot |
 | `E` | Add custom path point |
 | `R` | Delete last added custom path point |
-| `ENTER` | Override default camera path with custom path |
 | `DELETE` | Deletes the custom path and restores the default path |
 
 ### Path controls

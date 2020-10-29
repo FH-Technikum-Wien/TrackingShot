@@ -6,7 +6,7 @@
 class Plane : public Object
 {
 public:
-    Plane(const unsigned int *texture, glm::vec3 position, glm::vec3 eulerAngles) : Object(texture, position, eulerAngles) {
+    Plane(const Material& material, glm::vec3 position, glm::vec3 eulerAngles) : Object(material, position, eulerAngles) {
         init(vertices, 48);
     }
 

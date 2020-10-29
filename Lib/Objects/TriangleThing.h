@@ -6,7 +6,7 @@
 
 class TriangleThing : public Object {
 public:
-	TriangleThing(const unsigned int* texture, glm::vec3 position, glm::vec3 eulerAngles) : Object(texture, position,
+	TriangleThing(const Material& material, glm::vec3 position, glm::vec3 eulerAngles) : Object(material, position,
 		eulerAngles) {
 		init(vertices, 96);
 	}
@@ -15,25 +15,25 @@ private:
 	const float val = (float)sqrt(3) / 2;
 
 	const float vertices[96]{
-		//back
-		 1.0f,  val,  0.0f, 0.0f, val, -1.0f, 1.0f, 0.0f,
-		-1.0f,  val,  0.0f, 0.0f, val, -1.0f, 0.0f, 0.0f,
-		 0.0f, -val,  1.0f, 0.0f, val, -1.0f, 0.5f, 1.0f,
+		//front
+		 1.0f,  val,  0.0f,  0.0f, val,  1.0f, 1.0f, 0.0f,
+		 0.0f, -val,  1.0f,  0.0f, val,  1.0f, 0.5f, 1.0f,
+		-1.0f,  val,  0.0f,  0.0f, val,  1.0f, 0.0f, 0.0f,
+							 
+		//left				 
+		-1.0f,  val,  0.0f, -1.0f, -val, 0.0f, 0.5f, 1.0f,
+		 0.0f, -val,  1.0f, -1.0f, -val, 0.0f, 1.0f, 0.0f,
+		 0.0f, -val, -1.0f, -1.0f, -val, 0.0f, 0.0f, 0.0f,
 
 		//right
-		-1.0f,  val,  0.0f, 1.0f, -val, 0.0f, 0.5f, 1.0f,
-		 0.0f, -val, -1.0f, 1.0f, -val, 0.0f, 0.0f, 0.0f,
-		 0.0f, -val,  1.0f, 1.0f, -val, 0.0f, 1.0f, 0.0f,
+		 1.0f,  val,  0.0f,  1.0, -val, 0.0f, 0.5f, 1.0f,
+		 0.0f, -val, -1.0f,  1.0, -val, 0.0f, 1.0f, 0.0f,
+		 0.0f, -val,  1.0f,  1.0, -val, 0.0f, 0.0f, 0.0f,
 
-		//left
-		 1.0f,  val,  0.0f, -1.0, -val, 0.0f, 0.5f, 1.0f,
-		 0.0f, -val,  1.0f, -1.0, -val, 0.0f, 0.0f, 0.0f,
-		 0.0f, -val, -1.0f, -1.0, -val, 0.0f, 1.0f, 0.0f,
-
-		//front
-		-1.0f,  val,  0.0f, 0.0f, val, 1.0f, 1.0f, 0.0f,
-		 1.0f,  val,  0.0f, 0.0f, val, 1.0f, 0.0f, 0.0f,
-		 0.0f, -val, -1.0f, 0.0f, val, 1.0f, 0.5f, 1.0f
+		//back
+		-1.0f,  val,  0.0f,  0.0f, val, -1.0f, 1.0f, 0.0f,
+		 0.0f, -val, -1.0f,  0.0f, val, -1.0f, 0.5f, 1.0f,
+		 1.0f,  val,  0.0f,  0.0f, val, -1.0f, 0.0f, 0.0f
 	};
 };
 

@@ -3,12 +3,13 @@
 
 #include <glm/matrix.hpp>
 #include "../../Shaders/Shader.h"
+#include "../Datatypes/Material.h"
 
 class Object {
 public:
     glm::mat4 Transform = glm::mat4(1.0f);
 
-    Object(const unsigned int* texture, glm::vec3 position, glm::vec3 eulerAngles);
+    Object(const Material& material, glm::vec3 position, glm::vec3 eulerAngles);
 
     ~Object();
 
@@ -21,7 +22,7 @@ public:
 protected:
     unsigned int VAO{};
     unsigned int VBO{};
-    unsigned int texture{};
+    Material material;
     int vertexCount{};
 
     void init(const float* vertices, int arraySize);

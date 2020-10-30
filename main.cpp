@@ -89,7 +89,7 @@ int main() {
 	shader.setInt("diffuseTexture", 0);
 	shader.setInt("shadowMap", 1);
 	shader.setMat4("projectionMat", projectionMat);
-	shader.setFloat("ambientLightAmount", 0.15f);
+	shader.setFloat("ambientLightAmount", 0.3f);
 
 
 	Light light = Light(glm::vec3(-4.0f, 10.0f, 0.0f), false);
@@ -180,18 +180,19 @@ int main() {
 void addObjects(World& world) {
 	Material redMat = Material::GridMat(glm::vec3(1.0f, 0.0f, 0.0f));
 	Material greenMat = Material::GridMat(glm::vec3(0.0f, 1.0f, 0.0f));
-	Material blueMat = Material::GridMat(glm::vec3(0.0f, 1.0f, 1.0f));
+	Material cyanMat = Material::GridMat(glm::vec3(0.0f, 1.0f, 1.0f));
 	Material whiteMat = Material::GridMat();
 	Material brickMat = Material::BrickMat();
 	// Add objects.
-	world.addObject(new Plane(whiteMat, glm::vec3(0, -1, 0), glm::vec3(90, 0, 0)));
+	world.addObject(new Plane(whiteMat, glm::vec3(0, -1, 0), glm::vec3(90, 0, 0), glm::vec3(20.0f)));
 	world.addObject(new Cube(redMat, glm::vec3(), glm::vec3()));
 	world.addObject(new Cube(greenMat, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(), glm::vec3(0.5f)));
 	world.addObject(new Cube(redMat, glm::vec3(0.0f, 3.0f, -7.0f), glm::vec3()));
 	world.addObject(new Cube(redMat, glm::vec3(-3.0f, 0.0f, 2.0f), glm::vec3(45.0f, 45.0f, 0.0f)));
 	world.addObject(new Cube(redMat, glm::vec3(-5.0f, 3.0f, 0.0f), glm::vec3(120.0f, 0.0f, 0.0f)));
-	world.addObject(new Cube(blueMat, glm::vec3(2.0f, 1.0f, 4.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(2.0f, 1.0f, 2.0f)));
-	world.addObject(new Cube(redMat, glm::vec3(2.0f, 2.5f, 4.0f), glm::vec3(70.0f, 120.0f, 45.0f)));
+	world.addObject(new Cube(cyanMat, glm::vec3(2.0f, 0.0f, 4.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(2.0f, 0.25f, 2.0f)));
+	world.addObject(new Cube(redMat, glm::vec3(2.0f, 1.0f, 4.0f), glm::vec3(70.0f, 120.0f, 45.0f)));
+
 	world.addObject(new TriangleThing(brickMat, glm::vec3(-3.0f, 0.0f, -4.0f), glm::vec3(0.0f, 0.0f, 0.0f)));
 	world.addObject(new TriangleThing(brickMat, glm::vec3(-4.0f, 2.0f, 4.0f), glm::vec3(90.0f, 0.0f, 45.0f)));
 	world.addObject(new TriangleThing(brickMat, glm::vec3(4.0f, 1.0f, -4.0f), glm::vec3(70.0f, 120.0f, 45.0f)));

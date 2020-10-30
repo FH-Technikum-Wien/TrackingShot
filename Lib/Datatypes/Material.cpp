@@ -27,6 +27,16 @@ Material Material::BrickMat(glm::vec3 color)
 	return Material(&texture, color);
 }
 
+Material Material::MetalMat()
+{
+	unsigned int texture = Util::LoadTexture(Consts::PATHS::TEXTURE_WHITE, GL_RGB);
+	Material material = Material(&texture, glm::vec3(0.2f, 0.2f, 0.2f));
+	material.diffuseStrength = 0.2f;
+	material.specularStrength = 1.0f;
+	material.focus = 128;
+	return material;
+}
+
 Material::Material()
 {
 	unsigned int texture = Util::LoadTexture(Consts::PATHS::TEXTURE_WHITE, GL_RGB);

@@ -15,6 +15,7 @@ public:
 	static Material GridMat(glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f));
 	static Material WoodCrateMat(glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f));
 	static Material BrickMat(glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f));
+	static Material MetalMat();
 
 	Material();
 	Material(const unsigned int* texture);

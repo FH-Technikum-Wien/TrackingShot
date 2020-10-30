@@ -10,6 +10,7 @@ class Path
 public:
 	int pathIndex;
 
+	Path() = default;
 	Path(std::vector<PathPoint> pathPoints);
 	static Path DefaultPath();
 
@@ -22,8 +23,8 @@ public:
 	int size();
 
 private:
-	float pathSectionProgress;
-	std::vector<PathPoint> pathPoints;
+	float pathSectionProgress = 0.0f;
+	std::vector<PathPoint> pathPoints = std::vector<PathPoint>();
 	Spline spline = {0,0,0};
 };
 

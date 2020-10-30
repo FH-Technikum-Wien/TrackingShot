@@ -31,6 +31,10 @@ void World::ToggleFreeFly()
 
 void World::AddPathPoint()
 {
+	if (isUsingDefaultPath) {
+		isUsingDefaultPath = false;
+		path = Path();
+	}
 	path.add(PathPoint(camera.Position, camera.Orientation));
 }
 
@@ -42,6 +46,7 @@ void World::RemoveLastPathPoint()
 
 void World::ResetPath()
 {
+	isUsingDefaultPath = true;
 	path = Path::DefaultPath();
 }
 

@@ -184,9 +184,9 @@ void addObjects(World& world) {
 	Material whiteMat = Material::GridMat();
 	Material brickMat = Material::BrickMat();
 	// Add objects.
-	world.addObject(new Plane(whiteMat, glm::vec3(0, -1, 0), glm::vec3(90, 0, 0), glm::vec3(20.0f)));
+	world.addObject(new Cube(whiteMat, glm::vec3(0, -2, 0), glm::vec3(0, 0, 0), glm::vec3(20.0f, 2.0f, 20.0f)));
 	world.addObject(new Cube(redMat, glm::vec3(), glm::vec3()));
-	world.addObject(new Cube(greenMat, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(), glm::vec3(0.5f)));
+	world.addObject(new Cube(greenMat, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(), glm::vec3(0.5f, 1.0f, 0.5f)));
 	world.addObject(new Cube(redMat, glm::vec3(0.0f, 3.0f, -7.0f), glm::vec3()));
 	world.addObject(new Cube(redMat, glm::vec3(-3.0f, 0.0f, 2.0f), glm::vec3(45.0f, 45.0f, 0.0f)));
 	world.addObject(new Cube(redMat, glm::vec3(-5.0f, 3.0f, 0.0f), glm::vec3(120.0f, 0.0f, 0.0f)));

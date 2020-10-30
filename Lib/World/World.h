@@ -38,6 +38,7 @@ public:
 private:
 	inline static Camera camera{ glm::vec3(0.0f, 0.0f, 3.0f) };
 	inline static Path path = Path::DefaultPath();
+	inline static bool isUsingDefaultPath = true;
 
 	std::vector<Object*> objects;
 	float lastFrameTime = 0.0f;

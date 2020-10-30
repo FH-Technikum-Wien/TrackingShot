@@ -2,6 +2,7 @@
 #define TRACKINGSHOT_CUBE_H
 
 #include "Object.h"
+#include <algorithm>
 
 
 class Cube : public Object {
@@ -11,45 +12,46 @@ public:
 		scale = scale / glm::vec3(2.0f);
 
 		float vertices[288]{
-			-scale.x, -scale.y, -scale.z, 0.0f,  0.0f, -texScale.x, 0.0f, 0.0f,
-			 scale.x, -scale.y, -scale.z, 0.0f,  0.0f, -texScale.x, texScale.y, 0.0f,
-			 scale.x,  scale.y, -scale.z, 0.0f,  0.0f, -texScale.x, texScale.y, texScale.z,
-			 scale.x,  scale.y, -scale.z, 0.0f,  0.0f, -texScale.x, texScale.y, texScale.z,
-			-scale.x,  scale.y, -scale.z, 0.0f,  0.0f, -texScale.x, 0.0f, texScale.z,
-			-scale.x, -scale.y, -scale.z, 0.0f,  0.0f, -texScale.x, 0.0f, 0.0f,
-
-			-scale.x, -scale.y,  scale.z, 0.0f,  0.0f,  texScale.x, 0.0f, 0.0f,
-			 scale.x, -scale.y,  scale.z, 0.0f,  0.0f,  texScale.x, texScale.y, 0.0f,
-			 scale.x,  scale.y,  scale.z, 0.0f,  0.0f,  texScale.x, texScale.y, texScale.z,
-			 scale.x,  scale.y,  scale.z, 0.0f,  0.0f,  texScale.x, texScale.y, texScale.z,
-			-scale.x,  scale.y,  scale.z, 0.0f,  0.0f,  texScale.x, 0.0f, texScale.z,
-			-scale.x, -scale.y,  scale.z, 0.0f,  0.0f,  texScale.x, 0.0f, 0.0f,
-
+			// back face
+			-scale.x, -scale.y, -scale.z, 0.0f,  0.0f, -1.0f, 0.0f, 0.0f,
+			 scale.x, -scale.y, -scale.z, 0.0f,  0.0f, -1.0f, texScale.x, 0.0f,
+			 scale.x,  scale.y, -scale.z, 0.0f,  0.0f, -1.0f, texScale.x, texScale.y,
+			 scale.x,  scale.y, -scale.z, 0.0f,  0.0f, -1.0f, texScale.x, texScale.y,
+			-scale.x,  scale.y, -scale.z, 0.0f,  0.0f, -1.0f, 0.0f, texScale.y,
+			-scale.x, -scale.y, -scale.z, 0.0f,  0.0f, -1.0f, 0.0f, 0.0f,
+			// front face
+			-scale.x, -scale.y,  scale.z, 0.0f,  0.0f,  1.0f, 0.0f, 0.0f,
+			 scale.x, -scale.y,  scale.z, 0.0f,  0.0f,  1.0f, texScale.x, 0.0f,
+			 scale.x,  scale.y,  scale.z, 0.0f,  0.0f,  1.0f, texScale.x, texScale.y,
+			 scale.x,  scale.y,  scale.z, 0.0f,  0.0f,  1.0f, texScale.x, texScale.y,
+			-scale.x,  scale.y,  scale.z, 0.0f,  0.0f,  1.0f, 0.0f, texScale.y,
+			-scale.x, -scale.y,  scale.z, 0.0f,  0.0f,  1.0f, 0.0f, 0.0f,
+			// left face
 			-scale.x,  scale.y,  scale.z, 1.0f,  0.0f,  0.0f, texScale.y, 0.0f,
 			-scale.x,  scale.y, -scale.z, 1.0f,  0.0f,  0.0f, texScale.y, texScale.z,
 			-scale.x, -scale.y, -scale.z, 1.0f,  0.0f,  0.0f, 0.0f, texScale.z,
 			-scale.x, -scale.y, -scale.z, 1.0f,  0.0f,  0.0f, 0.0f, texScale.z,
 			-scale.x, -scale.y,  scale.z, 1.0f,  0.0f,  0.0f, 0.0f, 0.0f,
 			-scale.x,  scale.y,  scale.z, 1.0f,  0.0f,  0.0f, texScale.y, 0.0f,
-
+			// right face
 			 scale.x,  scale.y,  scale.z, 1.0f,  0.0f,  0.0f, texScale.y, 0.0f,
 			 scale.x,  scale.y, -scale.z, 1.0f,  0.0f,  0.0f, texScale.y, texScale.z,
 			 scale.x, -scale.y, -scale.z, 1.0f,  0.0f,  0.0f, 0.0f, texScale.z,
 			 scale.x, -scale.y, -scale.z, 1.0f,  0.0f,  0.0f, 0.0f, texScale.z,
 			 scale.x, -scale.y,  scale.z, 1.0f,  0.0f,  0.0f, 0.0f, 0.0f,
 			 scale.x,  scale.y,  scale.z, 1.0f,  0.0f,  0.0f, texScale.y, 0.0f,
-
+			 // bottom face
 			-scale.x, -scale.y, -scale.z, 0.0f, -1.0f,  0.0f, 0.0f, texScale.z,
-			 scale.x, -scale.y, -scale.z, 0.0f, -1.0f,  0.0f, texScale.y, texScale.z,
-			 scale.x, -scale.y,  scale.z, 0.0f, -1.0f,  0.0f, texScale.y, 0.0f,
-			 scale.x, -scale.y,  scale.z, 0.0f, -1.0f,  0.0f, texScale.y, 0.0f,
+			 scale.x, -scale.y, -scale.z, 0.0f, -1.0f,  0.0f, texScale.x, texScale.z,
+			 scale.x, -scale.y,  scale.z, 0.0f, -1.0f,  0.0f, texScale.x, 0.0f,
+			 scale.x, -scale.y,  scale.z, 0.0f, -1.0f,  0.0f, texScale.x, 0.0f,
 			-scale.x, -scale.y,  scale.z, 0.0f, -1.0f,  0.0f, 0.0f, 0.0f,
 			-scale.x, -scale.y, -scale.z, 0.0f, -1.0f,  0.0f, 0.0f, texScale.z,
-
+			// top face
 			-scale.x,  scale.y, -scale.z, 0.0f,  1.0f,  0.0f, 0.0f, texScale.z,
-			 scale.x,  scale.y, -scale.z, 0.0f,  1.0f,  0.0f, texScale.y, texScale.z,
-			 scale.x,  scale.y,  scale.z, 0.0f,  1.0f,  0.0f, texScale.y, 0.0f,
-			 scale.x,  scale.y,  scale.z, 0.0f,  1.0f,  0.0f, texScale.y, 0.0f,
+			 scale.x,  scale.y, -scale.z, 0.0f,  1.0f,  0.0f, texScale.x, texScale.z,
+			 scale.x,  scale.y,  scale.z, 0.0f,  1.0f,  0.0f, texScale.x, 0.0f,
+			 scale.x,  scale.y,  scale.z, 0.0f,  1.0f,  0.0f, texScale.x, 0.0f,
 			-scale.x,  scale.y,  scale.z, 0.0f,  1.0f,  0.0f, 0.0f, 0.0f,
 			-scale.x,  scale.y, -scale.z, 0.0f,  1.0f,  0.0f, 0.0f, texScale.z
 		};

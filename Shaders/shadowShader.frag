@@ -34,8 +34,8 @@ float calculateShadowAmount(vec4 fragPosLightSpace, vec3 lightDirection, vec3 no
     projectionCoords = projectionCoords * 0.5 + 0.5;
     
     // If outside of far plane -> no shadow
-    //if(projectionCoords.z > 1.0)
-    //    return 0.0;
+    if(projectionCoords.z > 1.0)
+        return 0.0;
 
     // Get closest depth from light's perspective.
     float closestDepth = texture(shadowMap, projectionCoords.xy).r;
@@ -46,21 +46,6 @@ float calculateShadowAmount(vec4 fragPosLightSpace, vec3 lightDirection, vec3 no
     float bias = max(0.05 * (1.0 - dot(normal, lightDirection)), 0.005);  
     // Check if current is bigger and thereby in shadow.
     float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
-
-    /*
-    // PCF - Multiple shadow cehcks with offsets.
-    float shadow = 0;
-    vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
-    for(int x = -1; x <= 1; ++x)
-    {
-        for(int y = -1; y <= 1; ++y)
-        {
-            float pcfDepth = texture(shadowMap, projectionCoords.xy + vec2(x, y) * texelSize).r; 
-            shadow += currentDepth - bias > pcfDepth  ? 1.0 : 0.0;        
-        }    
-    }
-    shadow /= 9.0;
-    */
 
     return shadow;
 }

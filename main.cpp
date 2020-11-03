@@ -82,8 +82,6 @@ int main() {
 	glm::mat4 projectionMat;
 	projectionMat = glm::perspective(glm::radians(45.0f), (float)Consts::SCREEN::WIDTH / (float)Consts::SCREEN::HEIGHT, 0.1f, 100.0f);
 
-
-
 	Shader shader(Consts::PATHS::SHADOW_VERT_SHADER, Consts::PATHS::SHADOW_FRAG_SHADER);
 	shader.activate();
 	shader.setInt("diffuseTexture", 0);
@@ -183,13 +181,16 @@ void addObjects(World& world) {
 	Material cyanMat = Material::GridMat(glm::vec3(0.0f, 1.0f, 1.0f));
 	Material whiteMat = Material::GridMat();
 	Material brickMat = Material::BrickMat();
+
+	redMat.specularStrength = 0.3f;
+
 	// Add objects.
 	world.addObject(new Cube(whiteMat, glm::vec3(0, -2, 0), glm::vec3(0, 0, 0), glm::vec3(20.0f, 2.0f, 20.0f)));
 	world.addObject(new Cube(redMat, glm::vec3(), glm::vec3()));
 	world.addObject(new Cube(greenMat, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(), glm::vec3(0.5f, 1.0f, 0.5f)));
 	world.addObject(new Cube(redMat, glm::vec3(0.0f, 3.0f, -7.0f), glm::vec3()));
-	world.addObject(new Cube(redMat, glm::vec3(-3.0f, 0.0f, 2.0f), glm::vec3(45.0f, 45.0f, 0.0f)));
-	world.addObject(new Cube(redMat, glm::vec3(-5.0f, 3.0f, 0.0f), glm::vec3(120.0f, 0.0f, 0.0f)));
+	world.addObject(new Cube(cyanMat, glm::vec3(-3.0f, 0.0f, 2.0f), glm::vec3(45.0f, 45.0f, 0.0f)));
+	world.addObject(new Cube(greenMat, glm::vec3(-5.0f, 3.0f, 0.0f), glm::vec3(120.0f, 0.0f, 0.0f)));
 	world.addObject(new Cube(cyanMat, glm::vec3(2.0f, 0.0f, 4.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(2.0f, 0.25f, 2.0f)));
 	world.addObject(new Cube(redMat, glm::vec3(2.0f, 1.0f, 4.0f), glm::vec3(70.0f, 120.0f, 45.0f)));
 

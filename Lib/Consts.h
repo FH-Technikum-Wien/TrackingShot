@@ -8,8 +8,8 @@ public:
 
 	struct SCREEN {
 	public:
-		static const unsigned int WIDTH = 1920;
-		static const unsigned int HEIGHT = 1080;
+		static const unsigned int WIDTH = 1200;
+		static const unsigned int HEIGHT = 800;
 	};
 
 	struct PATHS {

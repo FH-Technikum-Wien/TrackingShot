@@ -11,7 +11,7 @@ void World::SetMovementSpeed(MovementSpeedLevel level)
 		camera.MovementSpeed = 1.0f;
 		break;
 	case MovementSpeedLevel::FAST:
-		camera.MovementSpeed = 2.0f;
+		camera.MovementSpeed = 5.0f;
 		break;
 	case MovementSpeedLevel::SONIC:
 		camera.MovementSpeed = 10.0f;

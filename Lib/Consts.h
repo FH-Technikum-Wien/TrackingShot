@@ -14,8 +14,6 @@ public:
 
 	struct PATHS {
 	public:
-		inline static const char* VERTEX_SHADER = "Shaders/shader.vert";
-		inline static const char* FRAGMENT_SHADER = "Shaders/shader.frag";
 		inline static const char* DEPTH_MAP_VERT_SHADER = "Shaders/depthMap.vert";
 		inline static const char* DEPTH_MAP_FRAG_SHADER = "Shaders/depthMap.frag";
 		inline static const char* DEPTH_MAP_VISUAL_VERT = "Shaders/depthMapVisual.vert";
@@ -27,7 +25,9 @@ public:
 		inline static const char* TEXTURE_BRICK = "Art/Textures/brickWall.jpg";
 		inline static const char* TEXTURE_GRID = "Art/Textures/unityGrid.jpg";
 		inline static const char* TEXTURE_WHITE = "Art/Textures/white.jpg";
-		inline static const char* TEXTURE_AWESOME = "Art/Textures/awesomeface.png";
+
+		inline static const char* NORMAL_MAP_EMPTY = "Art/Textures/emptyNormalMap.jpg";
+		inline static const char* NORMAL_MAP_BRICK = "Art/Textures/brickWall_normal.jpg";
 	};
 
 	struct RENDERING {

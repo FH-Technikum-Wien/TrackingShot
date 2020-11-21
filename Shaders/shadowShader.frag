@@ -61,6 +61,7 @@ void main()
     vec3 lightDirection = normalize(lightPos - fs_in.FragPos);
     vec3 cameraDirection = normalize(cameraPos - fs_in.FragPos);
     vec3 midpoint = normalize(lightDirection + cameraDirection);
+    vec3 reflectionDirection = reflect(-lightDirection, normal);
 
     vec3 color = texture(diffuseTexture, fs_in.TexCoords).rgb * textureColor;
 
@@ -70,7 +71,7 @@ void main()
     // Diffuse Light
     vec3 diffuseLight = max(0.0, dot(lightDirection, normal)) * diffuse * lightColor;
     // SpecularLight
-    vec3 specularLight = (pow(max(0.0, dot(normal, midpoint)), focus) * specular) * lightIntensity * lightColor;
+    vec3 specularLight = (pow(max(0.0, dot(cameraDirection, reflectionDirection)), focus) * specular) * lightIntensity * lightColor;
 
     // Shadow
     float shadowAmount = calculateShadowAmount(fs_in.FragPosLightSpace, lightDirection, normal);

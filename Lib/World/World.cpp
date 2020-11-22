@@ -73,6 +73,16 @@ void World::GoToFirstPathPoint()
 	GoToCurrentPathPoint();
 }
 
+float World::GetBumpiness()
+{
+	return normalMapBumpiness;
+}
+
+void World::SetBumpiness(float newBumpiness)
+{
+	normalMapBumpiness = newBumpiness;
+}
+
 void World::addObject(Object* object)
 {
 	objects.push_back(object);
@@ -93,6 +103,8 @@ void World::update(Shader& shader)
 	// Activate program.
 	shader.activate();
 	shader.setMat4("viewMat", camera.GetViewMat());
+	shader.setVec3("cameraPos", camera.Position);
+	shader.setFloat("bumpiness", normalMapBumpiness);
 
 	renderWorld(shader);
 }

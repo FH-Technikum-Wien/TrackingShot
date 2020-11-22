@@ -31,6 +31,9 @@ public:
 	static void GoToCurrentPathPoint();
 	static void GoToFirstPathPoint();
 
+	static float GetBumpiness();
+	static void SetBumpiness(float newBumpiness);
+
 	void addObject(Object* object);
 	void update(Shader& shader);
 	void renderWorld(Shader& shader);
@@ -42,4 +45,12 @@ private:
 
 	std::vector<Object*> objects;
 	float lastFrameTime = 0.0f;
+
+	/// <summary>
+	/// 0   -> Nothing
+	/// 1	-> Default
+	/// > 1 -> Increase
+	/// < 1 -> Decrease
+	/// </summary>
+	inline static float normalMapBumpiness = 1;
 };

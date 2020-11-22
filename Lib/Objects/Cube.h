@@ -27,12 +27,12 @@ public:
 			-scale.x,  scale.y,  scale.z, 0.0f,  0.0f,  1.0f, 0.0f, texScale.y,
 			-scale.x, -scale.y,  scale.z, 0.0f,  0.0f,  1.0f, 0.0f, 0.0f,
 			// left face
-			-scale.x,  scale.y,  scale.z, 1.0f,  0.0f,  0.0f, texScale.y, 0.0f,
-			-scale.x,  scale.y, -scale.z, 1.0f,  0.0f,  0.0f, texScale.y, texScale.z,
-			-scale.x, -scale.y, -scale.z, 1.0f,  0.0f,  0.0f, 0.0f, texScale.z,
-			-scale.x, -scale.y, -scale.z, 1.0f,  0.0f,  0.0f, 0.0f, texScale.z,
-			-scale.x, -scale.y,  scale.z, 1.0f,  0.0f,  0.0f, 0.0f, 0.0f,
-			-scale.x,  scale.y,  scale.z, 1.0f,  0.0f,  0.0f, texScale.y, 0.0f,
+			-scale.x,  scale.y,  scale.z, -1.0f,  0.0f,  0.0f, texScale.y, 0.0f,
+			-scale.x,  scale.y, -scale.z, -1.0f,  0.0f,  0.0f, texScale.y, texScale.z,
+			-scale.x, -scale.y, -scale.z, -1.0f,  0.0f,  0.0f, 0.0f, texScale.z,
+			-scale.x, -scale.y, -scale.z, -1.0f,  0.0f,  0.0f, 0.0f, texScale.z,
+			-scale.x, -scale.y,  scale.z, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f,
+			-scale.x,  scale.y,  scale.z, -1.0f,  0.0f,  0.0f, texScale.y, 0.0f,
 			// right face
 			 scale.x,  scale.y,  scale.z, 1.0f,  0.0f,  0.0f, texScale.y, 0.0f,
 			 scale.x,  scale.y, -scale.z, 1.0f,  0.0f,  0.0f, texScale.y, texScale.z,

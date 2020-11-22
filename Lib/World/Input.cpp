@@ -81,3 +81,11 @@ void Input::ProcessSingleInput(GLFWwindow* window, int key, int scancode, int ac
         World::GoToCurrentPathPoint();
     }
 }
+
+void Input::ProcessScrollInput(GLFWwindow* window, double xoffset, double yoffset)
+{
+    float stepsSize = World::GetBumpiness() <= 1 ? 0.1f : 0.5f;
+    float newBumpiness = (yoffset > 0 ? stepsSize : -stepsSize) + World::GetBumpiness();
+    newBumpiness = std::min(10.0f, std::max(0.0f, newBumpiness));
+    World::SetBumpiness(newBumpiness);
+}

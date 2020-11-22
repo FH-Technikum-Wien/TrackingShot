@@ -109,37 +109,56 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="art\textures\awesomeface.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="art\textures\brickWall.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="art\textures\red.png">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="art\textures\sky.jpg">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="art\textures\texture_08.png">
+    <Image Include="Art\Textures\brickwall_2_normal.jpg">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="art\textures\texture_09.png">
+    <Image Include="Art\Textures\brickwall_2.jpg">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="art\textures\texture_13.png">
+    <Image Include="art\textures\brickWall.jpg">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="art\textures\unityGrid.jpg">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="Art\Textures\white.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
     <Image Include="art\textures\woodenCrate.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Art\Textures\brickWall_normal.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Art\Textures\emptyNormalMap.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Art\Textures\bricks2.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Art\Textures\bricks2_normal.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Art\Textures\rocks.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Art\Textures\rocks_normal.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Art\Textures\wood.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Art\Textures\wood_normal.jpg">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\shader.frag" />
-    <None Include="Shaders\shader.vert" />
     <None Include="Shaders\depthMap.frag" />
     <None Include="Shaders\depthMap.vert" />
     <None Include="Shaders\shadowShader.frag" />

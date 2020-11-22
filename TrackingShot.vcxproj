@@ -178,22 +178,27 @@
     <ClInclude Include="Lib\Util.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="art\textures\awesomeface.png" />
+    <Image Include="Art\Textures\bricks2.jpg" />
+    <Image Include="Art\Textures\bricks2_normal.jpg" />
     <Image Include="art\textures\brickWall.jpg" />
+    <Image Include="Art\Textures\brickwall_2.jpg" />
+    <Image Include="Art\Textures\brickwall_2_normal.jpg" />
+    <Image Include="Art\Textures\brickWall_normal.jpg" />
+    <Image Include="Art\Textures\emptyNormalMap.jpg" />
     <Image Include="art\textures\red.png" />
+    <Image Include="Art\Textures\rocks.jpg" />
+    <Image Include="Art\Textures\rocks_normal.jpg" />
     <Image Include="art\textures\sky.jpg" />
-    <Image Include="art\textures\texture_08.png" />
-    <Image Include="art\textures\texture_09.png" />
-    <Image Include="art\textures\texture_13.png" />
     <Image Include="art\textures\unityGrid.jpg" />
+    <Image Include="Art\Textures\white.jpg" />
+    <Image Include="Art\Textures\wood.jpg" />
     <Image Include="art\textures\woodenCrate.jpg" />
+    <Image Include="Art\Textures\wood_normal.jpg" />
   </ItemGroup>
   <ItemGroup>
     <None Include="OpenGL\lib\glfw3.dll" />
     <None Include="Shaders\depthMap.frag" />
     <None Include="Shaders\depthMap.vert" />
-    <None Include="Shaders\shader.frag" />
-    <None Include="Shaders\shader.vert" />
     <None Include="Shaders\shadowShader.frag" />
     <None Include="Shaders\shadowShader.vert" />
   </ItemGroup>

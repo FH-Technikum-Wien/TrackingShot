@@ -64,6 +64,7 @@ int main() {
 	glfwSetCursorPosCallback(window, mousePositionCallback);
 	glfwSetWindowFocusCallback(window, windowFocusCallback);
 	glfwSetKeyCallback(window, Input::ProcessSingleInput);
+	glfwSetScrollCallback(window, Input::ProcessScrollInput);
 
 	glEnable(GL_DEPTH_TEST);
 	// Lock cursor.
@@ -86,11 +87,12 @@ int main() {
 	shader.activate();
 	shader.setInt("diffuseTexture", 0);
 	shader.setInt("shadowMap", 1);
+	shader.setInt("normalMap", 2);
 	shader.setMat4("projectionMat", projectionMat);
-	shader.setFloat("ambientLightAmount", 0.3f);
+	shader.setFloat("ambientLightAmount", 0.5f);
 
 
-	Light light = Light(glm::vec3(-4.0f, 10.0f, 0.0f), false);
+	Light light = Light(glm::vec3(-6.0f, 8.0f, -1.0f), 2.0f);
 	glm::mat4 lightSpaceMat = light.activateLight(shader);
 
 	World world;
@@ -104,7 +106,6 @@ int main() {
 	// DepthMap Shader
 	Shader depthMapShader(Consts::PATHS::DEPTH_MAP_VERT_SHADER, Consts::PATHS::DEPTH_MAP_FRAG_SHADER);
 	depthMapShader.activate();
-	depthMapShader.setMat4("lightSpaceMat", lightSpaceMat);
 	// Framebuffer for rendering the depthMap.
 	unsigned int depthMapFBO;
 	glGenFramebuffers(1, &depthMapFBO);
@@ -129,8 +130,8 @@ int main() {
 	glReadBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	while (!glfwWindowShouldClose(window)) {
-
+	while (!glfwWindowShouldClose(window))
+	{
 		// Sets one color for window (background).
 		glClearColor(0.0f, 0.3f, 0.4f, 1.0f);
 		// Clear color buffer and depth buffer.
@@ -141,6 +142,7 @@ int main() {
 
 		// Render depth of scene to depthMap texture
 		depthMapShader.activate();
+		depthMapShader.setMat4("lightSpaceMat", lightSpaceMat);
 		glViewport(0, 0, Consts::RENDERING::SHADOW_WITH, Consts::RENDERING::SHADOW_HEIGHT);
 		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
 		glClear(GL_DEPTH_BUFFER_BIT);
@@ -158,7 +160,8 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		shader.activate();
-		shader.setVec3("cameraPos", World::GetCamera().Position);
+		shader.setVec3("lightPos", light.position);
+		shader.setMat4("lightSpaceMat", lightSpaceMat);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, depthMap);
 
@@ -169,6 +172,11 @@ int main() {
 		glfwSwapBuffers(window);
 		// Checks if any events are triggered and executes callbacks.
 		glfwPollEvents();
+
+
+		// Show bumpiness
+		std::string bumpiness = std::to_string(World::GetBumpiness());
+		glfwSetWindowTitle(window, bumpiness.c_str());
 	}
 
 	glfwTerminate();
@@ -176,27 +184,25 @@ int main() {
 }
 
 void addObjects(World& world) {
-	Material redMat = Material::GridMat(glm::vec3(1.0f, 0.0f, 0.0f));
-	Material greenMat = Material::GridMat(glm::vec3(0.0f, 1.0f, 0.0f));
-	Material cyanMat = Material::GridMat(glm::vec3(0.0f, 1.0f, 1.0f));
-	Material whiteMat = Material::GridMat();
-	Material brickMat = Material::BrickMat();
 
-	redMat.specularStrength = 0.3f;
+	Material rocksMat = Material::RocksMat();
+	Material woodMat = Material::WoodMat();
+	Material brickMat = Material::BrickMat();
+	Material brick2Mat = Material::Brick2Mat();
 
 	// Add objects.
-	world.addObject(new Cube(whiteMat, glm::vec3(0, -2, 0), glm::vec3(0, 0, 0), glm::vec3(20.0f, 2.0f, 20.0f)));
-	world.addObject(new Cube(redMat, glm::vec3(), glm::vec3()));
-	world.addObject(new Cube(greenMat, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(), glm::vec3(0.5f, 1.0f, 0.5f)));
-	world.addObject(new Cube(redMat, glm::vec3(0.0f, 3.0f, -7.0f), glm::vec3()));
-	world.addObject(new Cube(cyanMat, glm::vec3(-3.0f, 0.0f, 2.0f), glm::vec3(45.0f, 45.0f, 0.0f)));
-	world.addObject(new Cube(greenMat, glm::vec3(-5.0f, 3.0f, 0.0f), glm::vec3(120.0f, 0.0f, 0.0f)));
-	world.addObject(new Cube(cyanMat, glm::vec3(2.0f, 0.0f, 4.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(2.0f, 0.25f, 2.0f)));
-	world.addObject(new Cube(redMat, glm::vec3(2.0f, 1.0f, 4.0f), glm::vec3(70.0f, 120.0f, 45.0f)));
+	world.addObject(new Cube(woodMat, glm::vec3(0, -2, 0), glm::vec3(0, 0, 0), glm::vec3(20.0f, 2.0f, 20.0f)));
+	world.addObject(new Cube(rocksMat, glm::vec3(), glm::vec3()));
+	world.addObject(new Cube(brick2Mat, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(), glm::vec3(0.5f, 1.0f, 0.5f)));
+	world.addObject(new Cube(rocksMat, glm::vec3(0.0f, 3.0f, -7.0f), glm::vec3()));
+	world.addObject(new Cube(brickMat, glm::vec3(-3.0f, 0.0f, 2.0f), glm::vec3(45.0f, 45.0f, 0.0f)));
+	world.addObject(new Cube(brick2Mat, glm::vec3(-5.0f, 3.0f, 0.0f), glm::vec3(120.0f, 0.0f, 0.0f)));
+	world.addObject(new Cube(brick2Mat, glm::vec3(2.0f, 0.0f, 4.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(2.0f, 0.25f, 2.0f)));
+	world.addObject(new Cube(brickMat, glm::vec3(2.0f, 1.0f, 4.0f), glm::vec3(70.0f, 120.0f, 45.0f)));
 
 	world.addObject(new TriangleThing(brickMat, glm::vec3(-3.0f, 0.0f, -4.0f), glm::vec3(0.0f, 0.0f, 0.0f)));
-	world.addObject(new TriangleThing(brickMat, glm::vec3(-4.0f, 2.0f, 4.0f), glm::vec3(90.0f, 0.0f, 45.0f)));
-	world.addObject(new TriangleThing(brickMat, glm::vec3(4.0f, 1.0f, -4.0f), glm::vec3(70.0f, 120.0f, 45.0f)));
+	world.addObject(new TriangleThing(woodMat, glm::vec3(-4.0f, 2.0f, 4.0f), glm::vec3(90.0f, 0.0f, 45.0f)));
+	world.addObject(new TriangleThing(rocksMat, glm::vec3(4.0f, 1.0f, -4.0f), glm::vec3(70.0f, 120.0f, 45.0f)));
 }
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height) {

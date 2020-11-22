@@ -21,13 +21,18 @@ public:
 		inline static const char* SHADOW_VERT_SHADER = "Shaders/shadowShader.vert";
 		inline static const char* SHADOW_FRAG_SHADER = "Shaders/shadowShader.frag";
 
-		inline static const char* TEXTURE_CRATE = "Art/Textures/woodenCrate.jpg";
-		inline static const char* TEXTURE_BRICK = "Art/Textures/brickWall.jpg";
 		inline static const char* TEXTURE_GRID = "Art/Textures/unityGrid.jpg";
-		inline static const char* TEXTURE_WHITE = "Art/Textures/white.jpg";
+
+		inline static const char* TEXTURE_BRICK = "Art/Textures/brickWall.jpg";
+		inline static const char* TEXTURE_WOOD = "Art/Textures/wood.jpg";
+		inline static const char* TEXTURE_ROCKS = "Art/Textures/rocks.jpg";
+		inline static const char* TEXTURE_BRICK2 = "Art/Textures/bricks2.jpg";
 
 		inline static const char* NORMAL_MAP_EMPTY = "Art/Textures/emptyNormalMap.jpg";
 		inline static const char* NORMAL_MAP_BRICK = "Art/Textures/brickWall_normal.jpg";
+		inline static const char* NORMAL_MAP_WOOD = "Art/Textures/wood_normal.jpg";
+		inline static const char* NORMAL_MAP_ROCKS = "Art/Textures/rocks_normal.jpg";
+		inline static const char* NORMAL_MAP_BRICK2 = "Art/Textures/bricks2_normal.jpg";
 	};
 
 	struct RENDERING {

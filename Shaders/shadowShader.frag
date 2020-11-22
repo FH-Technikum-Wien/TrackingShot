@@ -6,19 +6,23 @@ in VS_OUT {
     vec3 Normal;
     vec2 TexCoords;
     vec4 FragPosLightSpace;
+    mat3 TBN;
 } fs_in;
 
 in vec2 TexCoord;
 
 uniform sampler2D diffuseTexture;
+uniform sampler2D shadowMap;
+uniform sampler2D normalMap;
+
 uniform vec3 textureColor;
+
 
 uniform float ambientStrength;
 uniform float diffuseStrength;
 uniform float specularStrength;
 uniform float focus;
 
-uniform sampler2D shadowMap;
 
 uniform vec3 lightColor;
 uniform float lightIntensity;
@@ -26,6 +30,8 @@ uniform float ambientLightAmount;
 
 uniform vec3 lightPos;
 uniform vec3 cameraPos;
+
+uniform float bumpiness;
 
 float calculateShadowAmount(vec4 fragPosLightSpace, vec3 lightDirection, vec3 normal){
     // Transform to range between -1 and 1.
@@ -52,17 +58,27 @@ float calculateShadowAmount(vec4 fragPosLightSpace, vec3 lightDirection, vec3 no
 
 void main()
 {
+    // Clamp light
     float maxLight = ambientStrength + diffuseStrength + specularStrength;
     float ambient = ambientStrength / maxLight;
     float diffuse = diffuseStrength / maxLight;
     float specular = specularStrength / maxLight;
 
+    // Calculate vectors
     vec3 normal = normalize(fs_in.Normal);
     vec3 lightDirection = normalize(lightPos - fs_in.FragPos);
     vec3 cameraDirection = normalize(cameraPos - fs_in.FragPos);
     vec3 midpoint = normalize(lightDirection + cameraDirection);
+
+    // Shadow
+    float shadowAmount = calculateShadowAmount(fs_in.FragPosLightSpace, lightDirection, normal);
+
+    normal = (texture(normalMap, fs_in.TexCoords).rgb * 2.0 - 1.0);
+    normal.xy *= bumpiness;
+    normal = normalize(fs_in.TBN * normal);
     vec3 reflectionDirection = reflect(-lightDirection, normal);
 
+    // Main texture color
     vec3 color = texture(diffuseTexture, fs_in.TexCoords).rgb * textureColor;
 
     // Ambient Light
@@ -70,11 +86,10 @@ void main()
 
     // Diffuse Light
     vec3 diffuseLight = max(0.0, dot(lightDirection, normal)) * diffuse * lightColor;
+
     // SpecularLight
     vec3 specularLight = (pow(max(0.0, dot(cameraDirection, reflectionDirection)), focus) * specular) * lightIntensity * lightColor;
 
-    // Shadow
-    float shadowAmount = calculateShadowAmount(fs_in.FragPosLightSpace, lightDirection, normal);
 
     vec3 lighting = ((1.0 - shadowAmount) * (diffuseLight + specularLight) + ambientLight) * color;
     FragColor = vec4(lighting, 1.0);

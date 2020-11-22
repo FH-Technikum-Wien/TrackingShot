@@ -20,12 +20,16 @@ public:
     void rotate(glm::vec3 eulerAngles);
 
 protected:
-    unsigned int VAO{};
-    unsigned int VBO{};
+    unsigned int VAO = 0;
+    unsigned int VBO = 0;
+    unsigned int VBO_TANGENTS = 0;
     Material material;
-    int vertexCount{};
+    int vertexCount = 0;
 
     void init(const float* vertices, int arraySize);
+
+private:
+    float* calculateTangents(const float* vertices, unsigned int tangentCount);
 };
 
 

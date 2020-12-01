@@ -38,8 +38,8 @@ public:
 	struct RENDERING {
 	public:
 		static const bool USE_WIREFRAME_MODE = false;
-		static const unsigned int SHADOW_WITH = 2048; 
-		static const unsigned int SHADOW_HEIGHT = 2048;
+		static const unsigned int SHADOW_WITH = 4096; 
+		static const unsigned int SHADOW_HEIGHT = 4096;
 	};
 };
 

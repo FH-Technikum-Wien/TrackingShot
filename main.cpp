@@ -92,7 +92,7 @@ int main() {
 	shader.setFloat("ambientLightAmount", 0.5f);
 
 
-	Light light = Light(glm::vec3(-6.0f, 8.0f, -1.0f), 2.0f);
+	Light light = Light(glm::vec3(-4.0f, 10.0f, 0.0f), 2.0f);
 	glm::mat4 lightSpaceMat = light.activateLight(shader);
 
 	World world;
@@ -151,8 +151,8 @@ int main() {
 		glCullFace(GL_FRONT);
 		// Render world's depth
 		world.renderWorld(depthMapShader);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glCullFace(GL_BACK);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		// Reset viewport.
 		glViewport(0, 0, Consts::SCREEN::WIDTH, Consts::SCREEN::HEIGHT);

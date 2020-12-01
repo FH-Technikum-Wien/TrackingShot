@@ -73,9 +73,10 @@ void main()
     // Shadow
     float shadowAmount = calculateShadowAmount(fs_in.FragPosLightSpace, lightDirection, normal);
 
+    // Get normal from normalMap
     normal = (texture(normalMap, fs_in.TexCoords).rgb * 2.0 - 1.0);
     normal.xy *= bumpiness;
-    normal = normalize(fs_in.TBN * normal);
+    normal = normalize(fs_in.TBN * normalize(normal));
     vec3 reflectionDirection = reflect(-lightDirection, normal);
 
     // Main texture color

@@ -117,8 +117,8 @@ float* Object::calculateTangents(const float* vertices, unsigned int tangentCoun
 		float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
 
 		tangents[tangentIndex] = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
-		tangents[tangentIndex] = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
-		tangents[tangentIndex] = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
+		tangents[tangentIndex + 1] = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
+		tangents[tangentIndex + 2] = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
 		tangentIndex += 3;
 	}
 	return tangents;

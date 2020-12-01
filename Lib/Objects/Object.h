@@ -24,7 +24,7 @@ protected:
     unsigned int VBO = 0;
     unsigned int VBO_TANGENTS = 0;
     Material material;
-    int vertexCount = 0;
+    unsigned int vertexCount = 0;
 
     void init(const float* vertices, int arraySize);
 

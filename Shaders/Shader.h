@@ -8,7 +8,9 @@ class Shader
 {
 public:
 	// ID of the program
-	unsigned int shaderProgramID;
+	unsigned int shaderProgramID = 0;
+
+	Shader() = default;
 
 	Shader(const char* vertexShaderPath, const char* fragmentShaderPath);
 

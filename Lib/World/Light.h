@@ -11,6 +11,7 @@ public:
 	glm::vec3 color;
 	float intensity = 1;
 
+	Light() = default;
 	Light(glm::vec3 position, float intensity = 1, glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f));
 
 	glm::mat4 activateLight(Shader& shader);

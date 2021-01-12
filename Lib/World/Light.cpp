@@ -13,11 +13,11 @@ Light::Light(glm::vec3 position, float intensity, glm::vec3 color)
 glm::mat4 Light::activateLight(Shader& shader)
 {
 	shader.activate();
-	float nearPlane = 0.01f, farPlane = 100.0f;
+	float nearPlane = 0.001f, farPlane = 50.0f;
 	glm::mat4 lightProjection;
 	lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, nearPlane, farPlane);
 
-	glm::mat4 lightViewMat = glm::lookAt(position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 lightViewMat = glm::lookAt(position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -10.0f, 0.0f));
 	// Transforms world space to light space.
 	glm::mat4 lightSpaceMat = lightProjection * lightViewMat;
 

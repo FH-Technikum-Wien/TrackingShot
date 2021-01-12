@@ -2,6 +2,7 @@
 #define TRACKINGSHOT_OBJECT_H
 
 #include <glm/matrix.hpp>
+#include <string>
 #include "../../Shaders/Shader.h"
 #include "../Datatypes/Material.h"
 
@@ -13,6 +14,8 @@ public:
 
     ~Object();
 
+    void init(float* vertices, float* normals, float* uvs, int vertexCount);
+    
     void render(const Shader& shader);
 
     void translate(glm::vec3 translation);
@@ -33,7 +36,6 @@ protected:
     unsigned int vertexCount = 0;
     float* vertices = nullptr;
 
-    void init(float* vertices, float* normals, float* uvs, int vertexCount);
 
 private:
     float* calculateTangents(float* vertices, float* uvs, unsigned int vertexCount);

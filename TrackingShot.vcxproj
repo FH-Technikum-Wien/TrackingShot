@@ -179,6 +179,7 @@
     <ClInclude Include="Lib\Math\Squad.h" />
     <ClInclude Include="Lib\Util.h" />
     <ClInclude Include="Intersection\Structures.h" />
+    <ClInclude Include="Util\objLoader\OBJ_Loader.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Art\Textures\bricks2.jpg" />

@@ -19,11 +19,15 @@
 #include "Shaders/Shader.h"
 #include "Lib/World/Light.h"
 
+#include "Util/objLoader/OBJ_Loader.h"
+
 using namespace std;
 
 void setup();
 
 void addObjects(World& world);
+
+void addComplexScene(World& world);
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 
@@ -200,11 +204,11 @@ void setup()
 	shader.setFloat("ambientLightAmount", 0.5f);
 
 
-	light = Light(glm::vec3(-4.0f, 10.0f, 0.0f), 2.0f);
+	light = Light(glm::vec3(-11.0f, 10.0f, 0.0f), 3.0f);
 	lightSpaceMat = light.activateLight(shader);
 
 	addObjects(world);
-
+	//addComplexScene(world);
 
 	//----------------------------------------------------------------------------------------------------
 	// SHADOWS
@@ -256,7 +260,34 @@ void addObjects(World& world)
 
 	world.addObject(new TriangleThing(brickMat, glm::vec3(-3.0f, 0.0f, -4.0f), glm::vec3(0.0f, 0.0f, 0.0f)));
 	world.addObject(new TriangleThing(woodMat, glm::vec3(-4.0f, 2.0f, 4.0f), glm::vec3(90.0f, 0.0f, 45.0f)));
-	world.addObject(new TriangleThing(rocksMat, glm::vec3(4.0f, 1.0f, -4.0f), glm::vec3(70.0f, 120.0f, 45.0f)));
+	world.addObject(new TriangleThing(rocksMat, glm::vec3(4.0f, 1.0f, -4.0f), glm::vec3(0.0f, 120.0f, 45.0f)));
+}
+
+void addComplexScene(World& world) {
+	objl::Loader loader;
+	loader.LoadFile("Resources/nubian_complex.obj");
+	objl::Mesh mesh = loader.LoadedMeshes[0];
+	std::vector<float> vertices;
+	std::vector<float> normals;
+	std::vector<float> uvs;
+	for (objl::Vertex vertex : mesh.Vertices)
+	{
+		vertices.push_back(vertex.Position.X);
+		vertices.push_back(vertex.Position.Y);
+		vertices.push_back(vertex.Position.Z);
+
+		normals.push_back(vertex.Normal.X);
+		normals.push_back(vertex.Normal.Y);
+		normals.push_back(vertex.Normal.Z);
+
+		uvs.push_back(vertex.TextureCoordinate.X);
+		uvs.push_back(vertex.TextureCoordinate.Y);
+	}
+
+	Material woodMat = Material::WoodMat();
+	Object* object = new Object(woodMat, glm::vec3(0), glm::vec3(0));
+	object->init(&vertices[0], &normals[0], &uvs[0], mesh.Vertices.size());
+	world.addObject(object);
 }
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height)

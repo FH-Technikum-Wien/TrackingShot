@@ -13,7 +13,10 @@ Object::~Object()
 {
 	// De-allocate all resources
 	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
+	glDeleteBuffers(1, &VBO_VERTICES);
+	glDeleteBuffers(1, &VBO_NORMALS);
+	glDeleteBuffers(1, &VBO_UVS);
+	glDeleteBuffers(1, &VBO_TANGENTS);
 }
 
 void Object::render(const Shader& shader)
@@ -48,55 +51,71 @@ void Object::rotate(glm::vec3 eulerAngles)
 	Transform = glm::rotate(Transform, glm::radians(eulerAngles.z), glm::vec3(0.0f, 0.0f, 1.0f));
 }
 
-void Object::init(const float* vertices, int arraySize)
+float* Object::getVerticesInWorldSpace()
 {
-	vertexCount = arraySize / 8;
+	float* worldVertices = new float[vertexCount * 3];
+	for (int i = 0; i < vertexCount; i++)
+	{
+		int index = i * 3;
+		glm::vec4 localPos = glm::vec4(vertices[index], vertices[index + 1], vertices[index + 2], 1);
+		glm::vec4 worldPos = Transform * localPos;
+		worldVertices[index] = worldPos.x;
+		worldVertices[index + 1] = worldPos.y;
+		worldVertices[index + 2] = worldPos.z;
+	}
+	return worldVertices;
+}
+
+void Object::init(float* vertices, float* normals, float* uvs, int vertexCount)
+{
+	this->vertexCount = vertexCount;
+	this->vertices = vertices;
 	// Generate Vertex-Array-Cube to store vertex attribute configuration and which VBO(s) to use
 	glGenVertexArrays(1, &VAO);
 	// Bind Vertex-Array-Cube to configure VBO(s)
 	glBindVertexArray(VAO);
 
-
 	// Generate Vertex-Buffer-Cube to manage memory on GPU and store vertices
-	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &VBO_VERTICES);
 	// Bind Vertex-Buffer-Cube to configure it
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_VERTICES);
 	// Copy vertex data into buffer's memory (into VBO which is bound to GL_ARRAY_BUFFER)
-	glBufferData(GL_ARRAY_BUFFER, arraySize * sizeof(float), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, (vertexCount * 3) * sizeof(float), vertices, GL_STATIC_DRAW);
 	// POSITION
 	// Tell OpenGL how to interpret/read the vertex data (per vertex attribute, e.g. one vertex point)
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 	// NORMALS
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+	glGenBuffers(1, &VBO_NORMALS);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_NORMALS);
+	glBufferData(GL_ARRAY_BUFFER, (vertexCount * 3) * sizeof(float), normals, GL_STATIC_DRAW);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(1);
 	// UVs
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glGenBuffers(1, &VBO_UVS);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_UVS);
+	glBufferData(GL_ARRAY_BUFFER, (vertexCount * 2) * sizeof(float), uvs, GL_STATIC_DRAW);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(2);
-
-
-	// Get tangents
-	float* tangents = calculateTangents(vertices, vertexCount);
+	// TANGENTS
+	float* tangents = calculateTangents(vertices, uvs, vertexCount);
 	glGenBuffers(1, &VBO_TANGENTS);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO_TANGENTS);
 	glBufferData(GL_ARRAY_BUFFER, (vertexCount * 3) * sizeof(float), tangents, GL_STATIC_DRAW);
-
-	// Tangents
 	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)(0));
 	glEnableVertexAttribArray(3);
 }
 
-float* Object::calculateTangents(const float* vertices, unsigned int tangentCount)
+float* Object::calculateTangents(float* vertices, float* uvs, unsigned int vertexCount)
 {
-	unsigned int tangentsSize = tangentCount * 3;
-	float* tangents = new float[tangentsSize];
+	float* tangents = new float[vertexCount * 3];
 	unsigned int tangentIndex = 0;
-	for (unsigned int i = 0; i < tangentCount; i++)
+	for (unsigned int i = 0; i < vertexCount / 3; i++)
 	{
 		// Get vertices
-		unsigned int vertex1 = i * 8;
-		unsigned int vertex2 = i * 8 + 1;
-		unsigned int vertex3 = i * 8 + 2;
+		unsigned int vertex1 = i * 9;
+		unsigned int vertex2 = i * 9 + 3;
+		unsigned int vertex3 = i * 9 + 6;
 		glm::vec3 pos1 = glm::vec3(vertices[vertex1], vertices[vertex1 + 1], vertices[vertex1 + 2]);
 		glm::vec3 pos2 = glm::vec3(vertices[vertex2], vertices[vertex2 + 1], vertices[vertex2 + 2]);
 		glm::vec3 pos3 = glm::vec3(vertices[vertex3], vertices[vertex3 + 1], vertices[vertex3 + 2]);
@@ -105,10 +124,13 @@ float* Object::calculateTangents(const float* vertices, unsigned int tangentCoun
 		glm::vec3 edge1 = pos2 - pos1;
 		glm::vec3 edge2 = pos3 - pos1;
 
-		// Get UV's (by adding texture and normal offset)
-		glm::vec2 uv1 = glm::vec2(vertices[vertex1 + 6], vertices[vertex1 + 7]);
-		glm::vec2 uv2 = glm::vec2(vertices[vertex2 + 6], vertices[vertex2 + 7]);
-		glm::vec2 uv3 = glm::vec2(vertices[vertex3 + 6], vertices[vertex3 + 7]);
+		// Get UV's
+		unsigned int uvIndex1 = i * 6;
+		unsigned int uvIndex2 = i * 6 + 2;
+		unsigned int uvIndex3 = i * 6 + 4;
+		glm::vec2 uv1 = glm::vec2(uvs[uvIndex1], uvs[uvIndex1 + 1]);
+		glm::vec2 uv2 = glm::vec2(uvs[uvIndex2], uvs[uvIndex2 + 1]);
+		glm::vec2 uv3 = glm::vec2(uvs[uvIndex3], uvs[uvIndex3 + 1]);
 
 		// Calculate deltaUV's
 		glm::vec2 deltaUV1 = uv2 - uv1;
@@ -116,10 +138,19 @@ float* Object::calculateTangents(const float* vertices, unsigned int tangentCoun
 
 		float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
 
-		tangents[tangentIndex] = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
-		tangents[tangentIndex + 1] = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
-		tangents[tangentIndex + 2] = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
-		tangentIndex += 3;
+		// Calculate x,y,z for the tangents
+		float tangentsX = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
+		float tangentsY = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
+		float tangentsZ = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
+
+		// All tangents same for triangle.
+		for (int i = 0; i < 3; i++)
+		{
+			tangents[tangentIndex] = tangentsX;
+			tangents[tangentIndex + 1] = tangentsY;
+			tangents[tangentIndex + 2] = tangentsZ;
+			tangentIndex += 3;
+		}
 	}
 	return tangents;
 }

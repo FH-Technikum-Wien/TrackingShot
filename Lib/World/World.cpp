@@ -116,3 +116,16 @@ void World::renderWorld(Shader& shader)
 		object->render(shader);
 	}
 }
+
+std::vector<float> World::getAllObjectVertices()
+{
+	std::vector<float> vertices;
+	for (Object* object : objects)
+	{
+		int vertexCount = object->getVertexCount();
+		float* objectVertices = object->getVerticesInWorldSpace();
+		std::vector<float> verticesVector(objectVertices, objectVertices + vertexCount * 3);
+		vertices.insert(vertices.end(), verticesVector.begin(), verticesVector.end());
+	}
+	return vertices;
+}

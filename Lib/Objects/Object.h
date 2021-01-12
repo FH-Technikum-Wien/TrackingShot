@@ -19,17 +19,24 @@ public:
 
     void rotate(glm::vec3 eulerAngles);
 
+    float* getVerticesInWorldSpace();
+    inline unsigned int getVertexCount() { return vertexCount; }
+
 protected:
     unsigned int VAO = 0;
-    unsigned int VBO = 0;
+    unsigned int VBO_VERTICES = 0;
+    unsigned int VBO_NORMALS = 0;
+    unsigned int VBO_UVS = 0;
     unsigned int VBO_TANGENTS = 0;
     Material material;
-    unsigned int vertexCount = 0;
 
-    void init(const float* vertices, int arraySize);
+    unsigned int vertexCount = 0;
+    float* vertices = nullptr;
+
+    void init(float* vertices, float* normals, float* uvs, int vertexCount);
 
 private:
-    float* calculateTangents(const float* vertices, unsigned int tangentCount);
+    float* calculateTangents(float* vertices, float* uvs, unsigned int vertexCount);
 };
 
 

@@ -2,6 +2,7 @@
 
 #include <glm/matrix.hpp>
 #include "../../Shaders/Shader.h"
+#include "../Datatypes/Material.h"
 
 class Line
 {
@@ -15,5 +16,7 @@ private:
 
 	unsigned int VAO = 0;
 	unsigned int VBO_VERTICES = 0;
+
+	Material material = Material(glm::vec3(1, 1, 1));
 };
 

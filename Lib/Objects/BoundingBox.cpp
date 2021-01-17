@@ -60,9 +60,9 @@ BoundingBox::BoundingBox(glm::vec3 position, glm::vec3 max, glm::vec3 min)
 
 void BoundingBox::render(const Shader& shader)
 {
-	shader.setMat4("modelMat", Transform);
-	shader.setVec3("textureColor", glm::vec3(1));
 	glBindVertexArray(VAO);
+	shader.setMat4("modelMat", Transform);
+
 	glLineWidth(2);
 	glDrawArrays(GL_LINES, 0, 24);
 }

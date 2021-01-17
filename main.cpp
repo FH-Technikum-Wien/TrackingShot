@@ -60,7 +60,7 @@ GLFWwindow* window = nullptr;
 bool useAntiAliasing = false;
 int samplingMode = 1;
 
-double delay = 0.5;
+double delay = 0.25;
 double timePressed = 0;
 
 // Kd-Tree
@@ -146,15 +146,17 @@ int main()
 
 			// Cast ray into scene
 			KdStructs::RayHit* hit = nullptr;
+
+			std::cout << "\n[*] Casting Ray." << std::endl;
 			auto start = std::chrono::high_resolution_clock::now();
 			kdtree->raycast(KdStructs::Ray(position, direction, 1000), hit);
 			auto end = std::chrono::high_resolution_clock::now();
-			std::cout << "Raycast time: " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << " microseconds." << std::endl;
-
 			visualizeRaycast(hit, camera, directionVector);
-			
+			std::cout << "Raycast time: " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << " microseconds." << std::endl;
+			std::cout << std::endl;
+
 		}
-		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2) == GLFW_PRESS ) {
+		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2) == GLFW_PRESS) {
 			world.intersectionPoint = nullptr;
 			world.intersectionTriangle = nullptr;
 			world.rayLine = nullptr;
@@ -235,17 +237,19 @@ void setup()
 	light = Light(glm::vec3(-11.0f, 10.0f, 0.0f), 3.0f);
 	lightSpaceMat = light.activateLight(shader);
 
-	addObjects(world);
-	//addComplexObject(world);
+	//addObjects(world);
+	addComplexObject(world);
 
 
 	// KD-TREE
 	std::vector<float> vertices = world.getAllObjectVertices();
 	std::vector<unsigned int> indices = world.getAllObjectIndices();
 
+	std::cout << "\n[*] Building kd-tree (slow)" << std::endl;
 	auto start = std::chrono::high_resolution_clock::now();
 	kdtree = new KdTree(&vertices[0], vertices.size() / 3);
 	auto end = std::chrono::high_resolution_clock::now();
+	std::cout << "[->] Done!" << std::endl;
 	std::cout << "Building time: " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << " microseconds." << std::endl;
 	kdtree->printStatistics();
 
@@ -314,7 +318,19 @@ void addObjects(World& world)
 
 void addComplexObject(World& world) {
 	objl::Loader loader;
-	loader.LoadFile("Resources/Nubian/nubian_complex.obj");
+	std::cout << "\n[*] Loading file" << std::endl;
+
+	std::string filePath = "Resources/Nubian/nubian_complex.obj";
+	//std::string filePath = "Resources/Nubian/Monkey.obj";
+	if (loader.LoadFile(filePath)) {
+		std::cout << "[->] Done!" << std::endl;
+		std::cout << "Vertices: " << loader.LoadedVertices.size() << std::endl;
+		std::cout << "Indices: " << loader.LoadedIndices.size() << std::endl;
+	}
+	else {
+		std::cout << "[X] Could not load file!" << std::endl;
+		return;
+	}
 	objl::Mesh mesh = loader.LoadedMeshes[0];
 	std::vector<float>* vertices = new std::vector<float>();
 	std::vector<float>* normals = new std::vector<float>();
@@ -349,7 +365,7 @@ void visualizeRaycast(KdStructs::RayHit* hit, Camera camera, glm::vec3 direction
 	// Add ray to scene.
 	world.addRay(new Line(camera.Position, camera.Position + directionVector * 1000.0f));
 	if (hit != nullptr) {
-		std::cout << "Hit at: " << hit->position << std::endl;
+		std::cout << "[->] Hit at: " << hit->position << std::endl;
 		// Add colorful triangle to scene.
 		glm::vec3 hitPosition = glm::vec3(hit->position[0], hit->position[1], hit->position[2]);
 		float* vertices = new float[9]{
@@ -366,7 +382,7 @@ void visualizeRaycast(KdStructs::RayHit* hit, Camera camera, glm::vec3 direction
 		world.addIntersection(new Point(hitPosition), triangle);
 	}
 	else {
-		std::cout << "No hit!" << std::endl;
+		std::cout << "[->] No hit!" << std::endl;
 		// Remove intersection point and triangle.
 		world.intersectionPoint = nullptr;
 		world.intersectionTriangle = nullptr;

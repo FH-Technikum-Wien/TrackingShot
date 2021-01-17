@@ -104,7 +104,7 @@ void Input::ProcessSingleInput(GLFWwindow* window, int key, int scancode, int ac
     {
         World::useAntiAliasing = !World::useAntiAliasing;
         std::string enabled = World::useAntiAliasing ? "enabled" : "disabled";
-        lastInput = "Kd-Tree-Visual " + enabled;
+        lastInput = "Anti aliasing " + enabled;
     }
     // Show kdtree wireframe
     if (key == GLFW_KEY_K && action == GLFW_PRESS)

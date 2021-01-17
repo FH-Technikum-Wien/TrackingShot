@@ -128,6 +128,7 @@ int main()
 		if (glfwGetKey(window, GLFW_KEY_F6) == GLFW_PRESS)
 		{
 			samplingMode = (samplingMode + 1) % 8;
+			Input::lastInput = "Switched anti aliasing mode to mode " + std::to_string(samplingMode);
 			glfwDestroyWindow(window);
 			setup();
 		}
@@ -135,6 +136,7 @@ int main()
 		// Change anti aliasing mode. Requires restart.
 		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS && timePressed + delay < glfwGetTime())
 		{
+			Input::lastInput = "Raycast add";
 			timePressed = glfwGetTime();
 			// Get ray origin and direction
 			Camera camera = World::GetCamera();
@@ -157,6 +159,7 @@ int main()
 
 		}
 		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2) == GLFW_PRESS) {
+			Input::lastInput = "Removed raycast information";
 			world.intersectionPoint = nullptr;
 			world.intersectionTriangle = nullptr;
 			world.rayLine = nullptr;

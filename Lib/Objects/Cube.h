@@ -56,7 +56,7 @@ public:
 			-scale.x,  scale.y, -scale.z,
 		};
 
-		float normals[108]{
+		float* normals = new float[108]{
 			0.0f,  0.0f, -1.0f,
 			0.0f,  0.0f, -1.0f,
 			0.0f,  0.0f, -1.0f,
@@ -100,7 +100,7 @@ public:
 			0.0f,  1.0f,  0.0f,
 		};
 
-		float uvs[72]{
+		float* uvs = new float[72]{
 			0.0f, 0.0f,
 			texScale.x, 0.0f,
 			texScale.x, texScale.y,
@@ -144,7 +144,22 @@ public:
 			0.0f, texScale.z
 		};
 
-		init(vertices, normals, uvs, 36);
+		unsigned int* indices = new unsigned int[36]{
+			0,1,2,
+			3,4,5,
+			6,7,8,
+			9,10,11,
+			12,13,14,
+			15,16,17,
+			18,19,20,
+			21,22,23,
+			24,25,26,
+			27,28,29,
+			30,31,32,
+			33,34,35
+		};
+
+		init(vertices, normals, uvs, 36, indices, 36);
 	}
 };
 

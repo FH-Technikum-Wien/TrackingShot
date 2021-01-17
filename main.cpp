@@ -15,11 +15,16 @@
 #include "Lib/Objects/Cube.h"
 #include "Lib/Objects/Plane.h"
 #include "Lib/Objects/TriangleThing.h"
+#include "Lib/Objects/SplittingPlane.h"
+#include "Lib/Objects/TriangleObject.h"
 
 #include "Shaders/Shader.h"
 #include "Lib/World/Light.h"
 
 #include "Util/objLoader/OBJ_Loader.h"
+#include "Intersection/KdTree.h"
+
+#include <chrono>
 
 using namespace std;
 
@@ -27,7 +32,9 @@ void setup();
 
 void addObjects(World& world);
 
-void addComplexScene(World& world);
+void addComplexObject(World& world);
+
+void visualizeRaycast(KdStructs::RayHit* hit, Camera camera, glm::vec3 directionVector);
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 
@@ -52,9 +59,12 @@ unsigned int depthMap;
 GLFWwindow* window = nullptr;
 bool useAntiAliasing = false;
 int samplingMode = 1;
+
 double delay = 0.5;
 double timePressed = 0;
 
+// Kd-Tree
+KdTree* kdtree = nullptr;
 
 int main()
 {
@@ -64,7 +74,7 @@ int main()
 	while (!glfwWindowShouldClose(window))
 	{
 		// Sets one color for window (background).
-		glClearColor(0.0f, 0.3f, 0.4f, 1.0f);
+		glClearColor(0.2f, 0.4f, 0.4f, 1.0f);
 		// Clear color buffer and depth buffer.
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -96,7 +106,7 @@ int main()
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, depthMap);
 
-		// Render world with shadows.
+		// Render world.
 		world.update(shader);
 
 		// Swaps the drawn buffer with the buffer that got written to.
@@ -105,33 +115,51 @@ int main()
 		glfwPollEvents();
 
 
-		// Show antialiasing
-		int mode = useAntiAliasing ? samplingMode : 0;
-		std::string sampling = std::to_string(mode);
-		glfwSetWindowTitle(window, sampling.c_str());
+		// Show last input
+		std::string lastInput = "Last Input: " + Input::lastInput;
+		glfwSetWindowTitle(window, lastInput.c_str());
 
 		// Antialiasing input
-		if (glfwGetKey(window, GLFW_KEY_F5) == GLFW_PRESS && timePressed <= glfwGetTime() - delay)
-		{
-			timePressed = glfwGetTime();
-			if (useAntiAliasing)
-			{
-				useAntiAliasing = false;
-				glDisable(GL_MULTISAMPLE);
-			}
-			else
-			{
-				useAntiAliasing = true;
-				glEnable(GL_MULTISAMPLE);
-			}
-		}
-
+		if (useAntiAliasing)
+			glEnable(GL_MULTISAMPLE);
+		else
+			glDisable(GL_MULTISAMPLE);
+		// Change anti aliasing mode. Requires restart.
 		if (glfwGetKey(window, GLFW_KEY_F6) == GLFW_PRESS)
 		{
 			samplingMode = (samplingMode + 1) % 8;
 			glfwDestroyWindow(window);
 			setup();
 		}
+
+		// Change anti aliasing mode. Requires restart.
+		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS && timePressed + delay < glfwGetTime())
+		{
+			timePressed = glfwGetTime();
+			// Get ray origin and direction
+			Camera camera = World::GetCamera();
+			KdStructs::Vector position = KdStructs::Vector(camera.Position.x, camera.Position.y, camera.Position.z);
+			glm::vec3 directionVector = camera.Orientation * glm::vec3(0, 0, -1);
+			// Normalize
+			directionVector = glm::normalize(directionVector);
+			KdStructs::Vector direction = KdStructs::Vector(directionVector.x, directionVector.y, directionVector.z);
+
+			// Cast ray into scene
+			KdStructs::RayHit* hit = nullptr;
+			auto start = std::chrono::high_resolution_clock::now();
+			kdtree->raycast(KdStructs::Ray(position, direction, 1000), hit);
+			auto end = std::chrono::high_resolution_clock::now();
+			std::cout << "Raycast time: " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << " microseconds." << std::endl;
+
+			visualizeRaycast(hit, camera, directionVector);
+			
+		}
+		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2) == GLFW_PRESS ) {
+			world.intersectionPoint = nullptr;
+			world.intersectionTriangle = nullptr;
+			world.rayLine = nullptr;
+		}
+
 	}
 
 	glfwTerminate();
@@ -208,7 +236,28 @@ void setup()
 	lightSpaceMat = light.activateLight(shader);
 
 	addObjects(world);
-	//addComplexScene(world);
+	//addComplexObject(world);
+
+
+	// KD-TREE
+	std::vector<float> vertices = world.getAllObjectVertices();
+	std::vector<unsigned int> indices = world.getAllObjectIndices();
+
+	auto start = std::chrono::high_resolution_clock::now();
+	kdtree = new KdTree(&vertices[0], vertices.size() / 3);
+	auto end = std::chrono::high_resolution_clock::now();
+	std::cout << "Building time: " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << " microseconds." << std::endl;
+	kdtree->printStatistics();
+
+	// Add bounding boxes.
+	std::vector<KdStructs::Node*> nodes = kdtree->getNodes();
+	for (KdStructs::Node* node : nodes) {
+		glm::vec3 position = glm::vec3(node->point->pos[0], node->point->pos[1], node->point->pos[2]);
+		glm::vec3 max = glm::vec3(node->max[0], node->max[1], node->max[2]);
+		glm::vec3 min = glm::vec3(node->min[0], node->min[1], node->min[2]);
+
+		world.addBoundingBox(new BoundingBox(position, max, min));
+	}
 
 	//----------------------------------------------------------------------------------------------------
 	// SHADOWS
@@ -263,31 +312,65 @@ void addObjects(World& world)
 	world.addObject(new TriangleThing(rocksMat, glm::vec3(4.0f, 1.0f, -4.0f), glm::vec3(0.0f, 120.0f, 45.0f)));
 }
 
-void addComplexScene(World& world) {
+void addComplexObject(World& world) {
 	objl::Loader loader;
-	loader.LoadFile("Resources/nubian_complex.obj");
+	loader.LoadFile("Resources/Nubian/nubian_complex.obj");
 	objl::Mesh mesh = loader.LoadedMeshes[0];
-	std::vector<float> vertices;
-	std::vector<float> normals;
-	std::vector<float> uvs;
-	for (objl::Vertex vertex : mesh.Vertices)
+	std::vector<float>* vertices = new std::vector<float>();
+	std::vector<float>* normals = new std::vector<float>();
+	std::vector<float>* uvs = new std::vector<float>();
+	for (const objl::Vertex& vertex : mesh.Vertices)
 	{
-		vertices.push_back(vertex.Position.X);
-		vertices.push_back(vertex.Position.Y);
-		vertices.push_back(vertex.Position.Z);
+		vertices->push_back(vertex.Position.X);
+		vertices->push_back(vertex.Position.Y);
+		vertices->push_back(vertex.Position.Z);
 
-		normals.push_back(vertex.Normal.X);
-		normals.push_back(vertex.Normal.Y);
-		normals.push_back(vertex.Normal.Z);
+		normals->push_back(vertex.Normal.X);
+		normals->push_back(vertex.Normal.Y);
+		normals->push_back(vertex.Normal.Z);
 
-		uvs.push_back(vertex.TextureCoordinate.X);
-		uvs.push_back(vertex.TextureCoordinate.Y);
+		uvs->push_back(vertex.TextureCoordinate.X);
+		uvs->push_back(vertex.TextureCoordinate.Y);
 	}
 
-	Material woodMat = Material::WoodMat();
-	Object* object = new Object(woodMat, glm::vec3(0), glm::vec3(0));
-	object->init(&vertices[0], &normals[0], &uvs[0], mesh.Vertices.size());
+	std::vector<unsigned int>* indices = new std::vector<unsigned int>(mesh.Indices);
+	//unsigned int texture = Util::LoadTexture("Resources/Plant/texture.jpg", GL_RGB);
+	//unsigned int normal = Util::LoadTexture("Resources/Plant/normals.jpg", GL_RGB);
+	//Material mat = Material(&texture, &normal, glm::vec3(1));
+	Material mat = Material::WoodMat();
+
+	Object* object = new Object(mat, glm::vec3(0), glm::vec3(0));
+	object->init(vertices->data(), normals->data(), uvs->data(), mesh.Vertices.size(), indices->data(), indices->size());
 	world.addObject(object);
+}
+
+void visualizeRaycast(KdStructs::RayHit* hit, Camera camera, glm::vec3 directionVector)
+{
+	// Add ray to scene.
+	world.addRay(new Line(camera.Position, camera.Position + directionVector * 1000.0f));
+	if (hit != nullptr) {
+		std::cout << "Hit at: " << hit->position << std::endl;
+		// Add colorful triangle to scene.
+		glm::vec3 hitPosition = glm::vec3(hit->position[0], hit->position[1], hit->position[2]);
+		float* vertices = new float[9]{
+			hit->triangle->a[0], hit->triangle->a[1], hit->triangle->a[2],
+			hit->triangle->b[0], hit->triangle->b[1], hit->triangle->b[2],
+			hit->triangle->c[0], hit->triangle->c[1], hit->triangle->c[2],
+		};
+		TriangleObject* triangle = new TriangleObject(vertices, glm::vec3(1, 0, 0));
+		// Move triangle a bit in camera direction to prevent overlapping.
+		triangle->translate(directionVector * -0.001f);
+		// Add ray to intersection.
+		world.addRay(new Line(camera.Position, hitPosition));
+		// Add intersecion point.
+		world.addIntersection(new Point(hitPosition), triangle);
+	}
+	else {
+		std::cout << "No hit!" << std::endl;
+		// Remove intersection point and triangle.
+		world.intersectionPoint = nullptr;
+		world.intersectionTriangle = nullptr;
+	}
 }
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height)

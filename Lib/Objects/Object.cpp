@@ -19,10 +19,12 @@ Object::~Object()
 	glDeleteBuffers(1, &VBO_TANGENTS);
 }
 
-void Object::init(float* vertices, float* normals, float* uvs, int vertexCount)
+void Object::init(float* vertices, float* normals, float* uvs, unsigned int vertexCount, unsigned int* indices, unsigned int indexCount)
 {
 	this->vertexCount = vertexCount;
+	this->indexCount = indexCount;
 	this->vertices = vertices;
+	this->indices = indices;
 	// Generate Vertex-Array-Cube to store vertex attribute configuration and which VBO(s) to use
 	glGenVertexArrays(1, &VAO);
 	// Bind Vertex-Array-Cube to configure VBO(s)
@@ -34,6 +36,13 @@ void Object::init(float* vertices, float* normals, float* uvs, int vertexCount)
 	glBindBuffer(GL_ARRAY_BUFFER, VBO_VERTICES);
 	// Copy vertex data into buffer's memory (into VBO which is bound to GL_ARRAY_BUFFER)
 	glBufferData(GL_ARRAY_BUFFER, (vertexCount * 3) * sizeof(float), vertices, GL_STATIC_DRAW);
+
+
+	glGenBuffers(1, &EBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount * sizeof(unsigned int), indices, GL_STATIC_DRAW);
+
+
 	// POSITION
 	// Tell OpenGL how to interpret/read the vertex data (per vertex attribute, e.g. one vertex point)
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
@@ -57,6 +66,8 @@ void Object::init(float* vertices, float* normals, float* uvs, int vertexCount)
 	glBufferData(GL_ARRAY_BUFFER, (vertexCount * 3) * sizeof(float), tangents, GL_STATIC_DRAW);
 	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)(0));
 	glEnableVertexAttribArray(3);
+
+	glBindVertexArray(0);
 }
 
 void Object::render(const Shader& shader)
@@ -76,7 +87,9 @@ void Object::render(const Shader& shader)
 	shader.setFloat("specularStrength", material.specularStrength);
 	shader.setFloat("focus", material.focus);
 	shader.setVec3("textureColor", material.color);
-	glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_VERTICES);
+	glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
 }
 
 void Object::translate(glm::vec3 translation)
@@ -97,8 +110,9 @@ float* Object::getVerticesInWorldSpace()
 	for (int i = 0; i < vertexCount; i++)
 	{
 		int index = i * 3;
-		glm::vec4 localPos = glm::vec4(vertices[index], vertices[index + 1], vertices[index + 2], 1);
-		glm::vec4 worldPos = Transform * localPos;
+
+		glm::vec3 localPos = glm::vec3(vertices[index], vertices[index + 1], vertices[index + 2]);
+		glm::vec4 worldPos = Transform * glm::vec4(localPos, 1);
 		worldVertices[index] = worldPos.x;
 		worldVertices[index + 1] = worldPos.y;
 		worldVertices[index + 2] = worldPos.z;

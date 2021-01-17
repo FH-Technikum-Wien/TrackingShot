@@ -1,5 +1,6 @@
 #include "World.h"
 #include <GLFW\glfw3.h>
+#include <iostream>
 
 void World::SetMovementSpeed(MovementSpeedLevel level)
 {
@@ -40,7 +41,7 @@ void World::AddPathPoint()
 
 void World::RemoveLastPathPoint()
 {
-	if(path.size() > 0)
+	if (path.size() > 0)
 		path.removeLast();
 }
 
@@ -88,6 +89,11 @@ void World::addObject(Object* object)
 	objects.push_back(object);
 }
 
+void World::addBoundingBox(BoundingBox* box)
+{
+	boundingBoxes.push_back(box);
+}
+
 void World::update(Shader& shader)
 {
 	// Delta calculations
@@ -107,6 +113,24 @@ void World::update(Shader& shader)
 	shader.setFloat("bumpiness", normalMapBumpiness);
 
 	renderWorld(shader);
+
+	// Render bounding boxes without shadows.
+	if (showKDTree) {
+		for (BoundingBox* box : boundingBoxes) {
+			box->render(shader);
+		}
+	}
+
+	if (rayLine != nullptr)
+		rayLine->render(shader);
+
+	// Render intersection
+	if (intersectionTriangle != nullptr) {
+		// Draw intersecntion point
+		intersectionPoint->render(shader);
+		// Draw triangle
+		intersectionTriangle->render(shader);
+	}
 }
 
 void World::renderWorld(Shader& shader)
@@ -115,6 +139,17 @@ void World::renderWorld(Shader& shader)
 	for (Object* object : objects) {
 		object->render(shader);
 	}
+}
+
+void World::addRay(Line* line) 
+{
+	rayLine = line;
+}
+
+void World::addIntersection(Point* intersectionPoint, TriangleObject* intersectionTriangle)
+{
+	this->intersectionPoint = intersectionPoint;
+	this->intersectionTriangle = intersectionTriangle;
 }
 
 std::vector<float> World::getAllObjectVertices()
@@ -128,4 +163,21 @@ std::vector<float> World::getAllObjectVertices()
 		vertices.insert(vertices.end(), verticesVector.begin(), verticesVector.end());
 	}
 	return vertices;
+}
+
+std::vector<unsigned int> World::getAllObjectIndices()
+{
+	unsigned int currentIndex = 0;
+	std::vector<unsigned int> indices;
+	for (Object* object : objects)
+	{
+		int indexCount = object->getIndexCount();
+		unsigned int* objectIndices = object->getIndices();
+		for (unsigned int i = 0; i < indexCount; i++)
+			objectIndices[i] = objectIndices[i] + currentIndex;
+		currentIndex += indexCount;
+		std::vector<unsigned int> indicesVector(objectIndices, objectIndices + indexCount);
+		indices.insert(indices.end(), indicesVector.begin(), indicesVector.end());
+	}
+	return indices;
 }

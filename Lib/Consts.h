@@ -27,6 +27,7 @@ public:
 		inline static const char* TEXTURE_WOOD = "Art/Textures/wood.jpg";
 		inline static const char* TEXTURE_ROCKS = "Art/Textures/rocks.jpg";
 		inline static const char* TEXTURE_BRICK2 = "Art/Textures/bricks2.jpg";
+		inline static const char* TEXTURE_WHITE = "Art/Textures/white.jpg";
 
 		inline static const char* NORMAL_MAP_EMPTY = "Art/Textures/emptyNormalMap.jpg";
 		inline static const char* NORMAL_MAP_BRICK = "Art/Textures/brickWall_normal.jpg";

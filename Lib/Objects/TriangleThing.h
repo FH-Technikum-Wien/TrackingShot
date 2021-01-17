@@ -8,7 +8,7 @@ class TriangleThing : public Object {
 public:
 	TriangleThing(const Material& material, glm::vec3 position, glm::vec3 eulerAngles) : Object(material, position,
 		eulerAngles) {
-		init(vertices, normals, uvs, 12);
+		init(vertices, normals, uvs, 12, indices, 12);
 	}
 
 private:
@@ -76,6 +76,13 @@ private:
 		 1.0f, 0.0f,
 		 0.5f, 1.0f,
 		 0.0f, 0.0f,
+	};
+
+	unsigned int indices[12]{
+		0,1,2,
+		3,4,5,
+		6,7,8,
+		9,10,11
 	};
 
 };

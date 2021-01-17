@@ -145,7 +145,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Intersection\KdTree.cpp" />
+    <ClCompile Include="Lib\Objects\BoundingBox.cpp" />
+    <ClCompile Include="Lib\Objects\Line.cpp" />
     <ClCompile Include="Lib\Objects\Object.cpp" />
+    <ClCompile Include="Lib\Objects\Point.cpp" />
     <ClCompile Include="Lib\World\Input.cpp" />
     <ClCompile Include="Lib\World\Camera.cpp" />
     <ClCompile Include="Lib\Datatypes\PathPoint.cpp" />
@@ -161,6 +164,7 @@
     <ClCompile Include="Lib\Util.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Lib\Objects\BoundingBox.h" />
     <ClInclude Include="Intersection\KdTree.h" />
     <ClInclude Include="Lib\World\Input.h" />
     <ClInclude Include="Lib\World\Camera.h" />
@@ -174,11 +178,15 @@
     <ClInclude Include="Lib\Datatypes\Material.h" />
     <ClInclude Include="Lib\World\Light.h" />
     <ClInclude Include="Lib\Datatypes\Path.h" />
+    <ClInclude Include="Lib\Objects\Line.h" />
+    <ClInclude Include="Lib\Objects\Point.h" />
     <ClInclude Include="Shaders\Shader.h" />
     <ClInclude Include="Lib\World\World.h" />
     <ClInclude Include="Lib\Math\Squad.h" />
     <ClInclude Include="Lib\Util.h" />
     <ClInclude Include="Intersection\Structures.h" />
+    <ClInclude Include="Lib\Objects\SplittingPlane.h" />
+    <ClInclude Include="Lib\Objects\TriangleObject.h" />
     <ClInclude Include="Util\objLoader\OBJ_Loader.h" />
   </ItemGroup>
   <ItemGroup>

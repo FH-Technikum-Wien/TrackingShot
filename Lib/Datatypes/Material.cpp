@@ -51,6 +51,21 @@ Material Material::Brick2Mat()
 	return material;
 }
 
+Material Material::WhiteMat()
+{
+	unsigned int texture = Util::LoadTexture(Consts::PATHS::TEXTURE_WHITE, GL_RGB);
+	unsigned int normalMap = Util::LoadTexture(Consts::PATHS::NORMAL_MAP_EMPTY, GL_RGB);
+	Material material = Material(&texture, &normalMap, glm::vec3(1.0f));
+	return material;
+}
+
+Material::Material(glm::vec3 color)
+{
+	this->texture = Util::LoadTexture(Consts::PATHS::TEXTURE_WHITE, GL_RGB);
+	this->normalMap = Util::LoadTexture(Consts::PATHS::NORMAL_MAP_EMPTY, GL_RGB);
+	this->color = color;
+}
+
 Material::Material(const unsigned int* texture)
 {
 	this->texture = *texture;

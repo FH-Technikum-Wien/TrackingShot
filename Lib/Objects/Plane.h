@@ -36,7 +36,12 @@ public:
 				  0.0f,       0.0f,
 		};
 
-		init(vertices, normals, uvs, 6);
+		unsigned int indices[6]{
+			0,1,2,
+			3,4,5
+		};
+
+		init(vertices, normals, uvs, 6, indices, 6);
 	}
 };
 

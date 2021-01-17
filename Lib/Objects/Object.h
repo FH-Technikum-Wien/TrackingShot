@@ -14,7 +14,7 @@ public:
 
     ~Object();
 
-    void init(float* vertices, float* normals, float* uvs, int vertexCount);
+    void init(float* vertices, float* normals, float* uvs, unsigned int vertexCount, unsigned int* indices, unsigned int indexCount);
     
     void render(const Shader& shader);
 
@@ -24,9 +24,12 @@ public:
 
     float* getVerticesInWorldSpace();
     inline unsigned int getVertexCount() { return vertexCount; }
+    inline unsigned int* getIndices() { return indices; }
+    inline unsigned int getIndexCount() { return indexCount; }
 
 protected:
     unsigned int VAO = 0;
+    unsigned int EBO = 0;
     unsigned int VBO_VERTICES = 0;
     unsigned int VBO_NORMALS = 0;
     unsigned int VBO_UVS = 0;
@@ -34,7 +37,9 @@ protected:
     Material material;
 
     unsigned int vertexCount = 0;
+    unsigned int indexCount = 0;
     float* vertices = nullptr;
+    unsigned int* indices = nullptr;
 
 
 private:

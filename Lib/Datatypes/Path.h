@@ -8,7 +8,7 @@
 class Path
 {
 public:
-	int pathIndex;
+	int pathIndex = 0;
 
 	Path() = default;
 	Path(std::vector<PathPoint> pathPoints);

@@ -57,7 +57,6 @@ unsigned int depthMap;
 
 
 GLFWwindow* window = nullptr;
-bool useAntiAliasing = false;
 int samplingMode = 1;
 
 double delay = 0.25;
@@ -120,7 +119,7 @@ int main()
 		glfwSetWindowTitle(window, lastInput.c_str());
 
 		// Antialiasing input
-		if (useAntiAliasing)
+		if (World::useAntiAliasing)
 			glEnable(GL_MULTISAMPLE);
 		else
 			glDisable(GL_MULTISAMPLE);
@@ -240,8 +239,8 @@ void setup()
 	light = Light(glm::vec3(-11.0f, 10.0f, 0.0f), 3.0f);
 	lightSpaceMat = light.activateLight(shader);
 
-	//addObjects(world);
-	addComplexObject(world);
+	addObjects(world);
+	//addComplexObject(world);
 
 
 	// KD-TREE

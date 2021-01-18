@@ -83,7 +83,8 @@ void Path::removeLast()
 void Path::setPathIndex(int index)
 {
 	pathSectionProgress = 0;
-	pathIndex = index % size();
+	pathIndex = index;
+	pathIndex = pathIndex >= size() ? 0 : pathIndex < 0 ? size() - 1 : pathIndex;
 }
 
 int Path::size()

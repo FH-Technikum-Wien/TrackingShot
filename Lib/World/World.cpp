@@ -41,8 +41,10 @@ void World::AddPathPoint()
 
 void World::RemoveLastPathPoint()
 {
-	if (path.size() > 0)
+	if (path.size() > 1)
 		path.removeLast();
+	else
+		World::ResetPath();
 }
 
 void World::ResetPath()
